@@ -4,25 +4,26 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
+using TriviaNight.Services;
 
 namespace TriviaNight.Controllers;
 
-public class CategoryController : Controller
+public class CategoriesController : Controller
 {
-    private readonly ILogger<CategoryController> _logger;
+    private readonly ILogger<CategoriesController> _logger;
     private readonly IApi _api;
 
-    public CategoryController(ILogger<CategoryController> logger, IApi api)
+    public CategoriesController(ILogger<CategoriesController> logger, IApi api)
     {
         _logger = logger;
         _api= api;
     }
 
     [HttpGet]
-    public IActionResult Index()
+    public IActionResult Categories()
     {
         List<CategoryModel> categories = new List<CategoryModel>();
-        HttpResponseMessage response = _api.client.GetAsync(_api.baseAddress + "api_category.php").Result;
+        HttpResponseMessage response = _api.Client.GetAsync("api_category.php").Result;
         CategoriesQuestionCountResponse categoryQuestionCount = CategoryCount();
 
         if (response.IsSuccessStatusCode)
@@ -43,7 +44,7 @@ public class CategoryController : Controller
     private CategoriesQuestionCountResponse CategoryCount() 
     { 
         CategoriesQuestionCountResponse categoryQuestionCount = new CategoriesQuestionCountResponse();
-        HttpResponseMessage response = _api.client.GetAsync(_api.baseAddress + "api_count_global.php").Result;
+        HttpResponseMessage response = _api.Client.GetAsync("api_count_global.php").Result;
 
         if (response.IsSuccessStatusCode)
         {

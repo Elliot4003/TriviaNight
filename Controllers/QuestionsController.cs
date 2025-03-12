@@ -7,31 +7,38 @@ using TriviaNight.Models;
 
 namespace TriviaNight.Controllers
 {
-    public class QuestionController : Controller
+    public class QuestionsController : Controller
     {
-        private readonly ILogger<CategoryController> _logger;
+        private readonly ILogger<CategoriesController> _logger;
         private readonly IApi _api;
 
-        public QuestionController(ILogger<CategoryController> logger, IApi api)
+        public QuestionsController(ILogger<CategoriesController> logger, IApi api)
         {
             _logger = logger;
             _api = api;
         }
 
-        [HttpGet]
-        public IActionResult Questions(QuestionRequestModel questionRequest)
+        public IActionResult Questions(int category, int amount, string difficulty)
         {
+            QuestionRequestModel questionRequest = new QuestionRequestModel()
+            {
+                Amount = amount,
+                Category = category,
+                Difficulty = difficulty
+            };
+
             List<QuestionModel> questions = new List<QuestionModel>();
             questions = QuestionRequest(questionRequest);
 
-            return View();
+            return View(questions);
         }
 
+        [HttpGet]
         private List<QuestionModel> QuestionRequest(QuestionRequestModel questionRequest)
         {
             List<QuestionModel> questions = new List<QuestionModel>();
-            string request = "api.php?category=" + questionRequest.Category.ToString() + "&amount=" + questionRequest.Amount.ToString() + "&difficulty=" + questionRequest.Difficulty + "&";
-            HttpResponseMessage response = _api.client.GetAsync(_api.baseAddress + request).Result;
+            string request = "api.php?category=" + questionRequest.Category.ToString() + "&amount=" + questionRequest.Amount.ToString() + "&difficulty=" + questionRequest.Difficulty.ToLower();
+            HttpResponseMessage response = _api.Client.GetAsync(request).Result;
 
             if (response.IsSuccessStatusCode)
             {

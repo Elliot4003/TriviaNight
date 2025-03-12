@@ -19,7 +19,7 @@ namespace TriviaNight.Models
         [JsonPropertyName("correct_answer")]
         public string? CorrectAnswer { get; set; }
 
-        [JsonPropertyName("incorrect_answer")]
+        [JsonPropertyName("incorrect_answers")]
         public List<String>? IncorrectAnswers { get; set; }
     }
 

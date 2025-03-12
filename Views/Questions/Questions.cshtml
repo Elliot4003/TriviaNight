@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewData["Title"] = "Questions";
+}
+
+@model List<QuestionModel>
+
+@{
+    int questionCount = Model.Count;
+
+    for(int i = 0; i <= questionCount; i++) {
+
+        List<string> questions = Model[i].IncorrectAnswers;
+        questions.Add(Model[i].CorrectAnswer);
+        questions = questions.OrderBy(x => Guid.NewGuid()).ToList();
+
+        <div class="d-flex justify-content-center align-items-center text-center mt-4">
+            <div class="accordion accordion-flush" id="accordion">
+                <div class="container">
+                    <div class="row">
+                    @{
+                        foreach(string question in questions) {
+                            <div class="col-md-6">
+                                @question
+                            </div>
+                        }
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
