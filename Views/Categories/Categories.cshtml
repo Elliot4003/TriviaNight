@@ -4,6 +4,18 @@
 
 @model List<CategoryModel>
 
+<style>
+    .accordion-button[aria-expanded="true"] {
+        background-color: #23272b;
+        color: white;
+    }
+
+    .accordion-button::after {
+        display: none !important;
+    }
+
+</style>
+
 <div class="d-flex justify-content-center mt-4">
     <h1>Categories</h1>
 </div>
@@ -26,7 +38,7 @@
                             <div class="col-md-6">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="@heading">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@collapse" aria-expanded="false" aria-controls="@collapse">
+                                        <button class="accordion-button collapsed btn-outline-dark shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#@collapse" aria-expanded="false" aria-controls="@collapse">
                                             @category.Name
                                         </button>
                                     </h2>
@@ -37,9 +49,9 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <input style="display:none" value="@category.Id" name="category" />
+                                                                <input class="visually-hidden" value="@category.Id" name="category" />
                                                                 <label for="amount" class="start-0">Amount of questions</label>
-                                                                <select class="form-control mt-2" name="amount">
+                                                                <select class="form-control shadow-none mt-2" name="amount">
                                                                     <option>10</option>
                                                                     @{
                                                                         if (@category.QuestionCount >= 20)
@@ -65,7 +77,7 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="difficulty">Difficulty</label>
-                                                                <select class="form-control mt-2" name="difficulty">
+                                                                <select class="form-control shadow-none mt-2" name="difficulty">
                                                                     <option>Easy</option>
                                                                     <option>Medium</option>
                                                                     <option>Hard</option>
@@ -74,7 +86,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <button type="submit" class="btn btn-primary mt-3">Go !</button>
+                                                <button type="submit" class="btn btn-outline-dark shadow-none mt-3">Go !</button>
                                             </form>
                                         </div>
                                     </div>
