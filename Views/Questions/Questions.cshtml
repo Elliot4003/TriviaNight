@@ -4,62 +4,66 @@
     ViewData["Title"] = "Questions";
 }
 
-@model List<QuestionModel>
+@model QuestionModel
 
 @{
-    int questionCount = Model.Count;
     string question;
-    string divId;
     List<string> answers = new List<string>();
 
-    for(int i = 0; i < questionCount; i++) {
+    question = WebUtility.HtmlDecode(Model.Question);
+    answers = Model.IncorrectAnswers;
 
-        question = WebUtility.HtmlDecode(Model[i].Question);
-        answers = Model[i].IncorrectAnswers;
-        Random rand = new Random();
-        if (answers.Count > 2) answers.Insert(rand.Next(4), Model[i].CorrectAnswer);
-        else answers.Add(Model[i].CorrectAnswer);
-        divId = "answersDiv" + i.ToString();
+    // Randomisation de l'ordre
+    Random rand = new Random();
+    if (Model.Type == "multiple") answers.Insert(rand.Next(4), Model.CorrectAnswer);
+    else answers.Insert(rand.Next(2), Model.CorrectAnswer);
+}
 
-        <div id="@divId">
-            <div class="container">
-                <div class="row">
-                    <div class="d-flex justify-content-center text-center align-items-center" style="height:35vh">
-                        <h2>@question</h2>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="container justify-content-center text-center align-items-center vh-100">
-                        @{
-                        if(answers.Count > 2) {
-                            <div class="row g-5">
-                                <div class="col">
-                                    <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[0]">@WebUtility.HtmlDecode(answers[0])</button>
-                                </div>
-                                <div class="col">
-                                    <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[1]">@WebUtility.HtmlDecode(answers[1])</button>
-                                </div>
-                                <div class="col">
-                                    <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[2]">@WebUtility.HtmlDecode(answers[2])</button>
-                                </div>
-                                <div class="col">
-                                    <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[3]">@WebUtility.HtmlDecode(answers[3])</button>
-                                </div>
-                            </div>
-                        } else {
-                            <div class="row g-5">
-                                <div class="col">
-                                    <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[0]">@answers[0]</button>
-                                </div>
-                                <div class="col">
-                                    <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[1]">@answers[1]</button>
-                                </div>
-                            </div>
-                        }
-                    }
-                    </div>
-                </div>
+<style>
+    html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden
+    }
+</style>
+<div>
+    <div class="container">
+        <div class="row">
+            <div class="d-flex justify-content-center text-center align-items-center" style="height:50vh">
+                <h2>@question</h2>
             </div>
         </div>
-    }
-}
+        <div class="row">
+            <div class="container justify-content-center text-center align-items-center">
+                @{
+                if(Model.Type == "multiple") {
+                    <div class="row g-5">
+                        <div class="col">
+                            <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[0]">@WebUtility.HtmlDecode(answers[0])</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[1]">@WebUtility.HtmlDecode(answers[1])</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[2]">@WebUtility.HtmlDecode(answers[2])</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[3]">@WebUtility.HtmlDecode(answers[3])</button>
+                        </div>
+                    </div>
+                } else {
+                    <div class="row g-5">
+                        <div class="col">
+                            <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[0]">@answers[0]</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-outline-dark btn-lg shadow-none" value="@answers[1]">@answers[1]</button>
+                        </div>
+                    </div>
+                }
+            }
+            </div>
+        </div>
+    </div>
+</div>
+    

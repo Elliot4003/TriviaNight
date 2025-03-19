@@ -1,9 +1,15 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace TriviaNight.Models
 {
+    [Keyless]
     public class QuestionModel
     {
+        [Key]
+        public int Id { get; set; }
+
         [JsonPropertyName("type")]
         public string? Type { get; set; }
 
@@ -23,7 +29,7 @@ namespace TriviaNight.Models
         public List<String>? IncorrectAnswers { get; set; }
     }
 
-    public class QuestionsResponse
+    public class QuestionsList
     {
         [JsonPropertyName("results")]
         public List<QuestionModel>? Questions { get; set; }
