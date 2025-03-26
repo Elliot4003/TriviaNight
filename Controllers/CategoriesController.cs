@@ -10,17 +10,35 @@ namespace TriviaNight.Controllers
     {
         private readonly ILogger<CategoriesController> _logger;
         private readonly IApi _api;
+        private readonly IDb _db;
+        private readonly TriviaNightDbContext _context;
 
-        public CategoriesController(ILogger<CategoriesController> logger, IApi api)
+        public CategoriesController(ILogger<CategoriesController> logger, IApi api, IDb db, TriviaNightDbContext context)
         {
             _logger = logger;
             _api = api;
+            _db = db;
+            _context = context;
         }
 
         [HttpGet]
         public IActionResult Categories()
         {
-            CategoriesList categories = _api.CategoryRequest(); // Récupération des catégories
+            CategoriesList categories = new CategoriesList();
+            if (_context.Categories.Count() == 0) 
+            {
+                categories = _api.CategoryRequest(); // Première récupération des catégories
+                _db.SaveCategories(categories, _context);
+            } 
+            else
+            {
+                categories.Categories = []; // Initialisation
+                List<CategoryModel> categoriesList = _context.Categories.ToList(); // Récupération dans la mémoire
+                foreach (CategoryModel category in categoriesList) 
+                {
+                    categories.Categories.Add(category);
+                }
+            }
 
             return View(categories);
         }

@@ -45,10 +45,12 @@ namespace TriviaNight.Controllers
                 QuestionModel question = _context.Questions.Find(ViewBag.Index);
 
                 return View(question);
+            } 
+            else
+            {
+                _db.DeleteQuestions(_context); // Fin des questions
+                return RedirectToAction("Categories"); // Retour aux catégories
             }
-
-            _db.DeleteQuestions(_context); // Fin des questions
-            return RedirectToAction("Categories"); // Retour aux catégories
 
         }
 

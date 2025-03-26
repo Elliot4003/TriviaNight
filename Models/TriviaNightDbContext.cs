@@ -6,6 +6,8 @@ namespace TriviaNight.Models
     {
         public DbSet<QuestionModel> Questions { get; set; }
 
+        public DbSet<CategoryModel> Categories { get; set; }
+
         public TriviaNightDbContext(DbContextOptions<TriviaNightDbContext> options) 
             : base(options)
         {

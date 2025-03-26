@@ -4,7 +4,6 @@ using System.Text.Json.Serialization;
 
 namespace TriviaNight.Models
 {
-    [Keyless]
     public class QuestionModel
     {
         [Key]

@@ -51,7 +51,7 @@
                                                             <div class="form-group">
                                                                 <input class="visually-hidden" value="@category.Id" name="category" />
                                                                 <label for="amount" class="start-0">Amount of questions</label>
-                                                                <select class="form-control shadow-none mt-2" name="amount">
+                                                                <select class="form-control shadow-none mt-2" name="amount" id="amount">
                                                                     <option>10</option>
                                                                     @{
                                                                         if (@category.QuestionCount >= 20)
@@ -77,7 +77,7 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="difficulty">Difficulty</label>
-                                                                <select class="form-control shadow-none mt-2" name="difficulty">
+                                                                <select class="form-control shadow-none mt-2" name="difficulty" id="difficulty">
                                                                     <option>Easy</option>
                                                                     <option>Medium</option>
                                                                     <option>Hard</option>
