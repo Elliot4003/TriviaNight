@@ -22,36 +22,36 @@ namespace TriviaNight.Controllers
 
         public IActionResult Questions(int category, int amount, string difficulty)
         {
-            // Première récupération des questions
-            if (_context.Questions.Count() == 0)
+            QuestionRequestModel questionRequest = new QuestionRequestModel()
             {
-                QuestionRequestModel questionRequest = new QuestionRequestModel()
-                {
-                    Amount = amount,
-                    Category = category,
-                    Difficulty = difficulty
-                };
+                Amount = amount,
+                Category = category,
+                Difficulty = difficulty
+            };
 
-                QuestionsList questions = _api.QuestionRequest(questionRequest); // Récupération via l'API
-                _db.SaveQuestions(questions, _context);
-                ViewBag.Index = 0; // Initialisation du numéro des questions
-            }
+            QuestionsList questions = _api.QuestionRequest(questionRequest); // Récupération via l'API
+            _db.SaveQuestions(questions, _context);
+            ViewBag.Index = 0; // Initialisation du numéro des questions
 
+            return RedirectToAction("Question");
+        }
+
+        public IActionResult Question() 
+        {
             ViewBag.Index += 1; // Incrémentation du numéro des questions
 
-            if (ViewBag.Index <= _context.Questions.Count()) 
+            if (ViewBag.Index <= _context.Questions.Count())
             {
                 // Récupération dans la mémoire
                 QuestionModel question = _context.Questions.Find(ViewBag.Index);
 
                 return View(question);
-            } 
+            }
             else
             {
                 _db.DeleteQuestions(_context); // Fin des questions
                 return RedirectToAction("Categories"); // Retour aux catégories
             }
-
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
