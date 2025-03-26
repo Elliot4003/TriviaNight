@@ -2,7 +2,7 @@
     ViewData["Title"] = "Trivia Night";
 }
 
-@model List<CategoryModel>
+@model CategoriesList
 
 <style>
     .accordion-button[aria-expanded="true"] {
@@ -27,7 +27,7 @@
                     string collapse;
                     string heading;
                     int i = 0;
-                    foreach (CategoryModel category in Model)
+                    foreach (CategoryModel category in Model.Categories)
                     {
                         if (category.QuestionCount >= 10)
                         {
