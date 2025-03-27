@@ -31,27 +31,23 @@ namespace TriviaNight.Controllers
 
             QuestionsList questions = _api.QuestionRequest(questionRequest); // Récupération via l'API
             _db.SaveQuestions(questions, _context);
-            ViewBag.Index = 0; // Initialisation du numéro des questions
 
-            return RedirectToAction("Question");
+            return RedirectToAction("Question", new { id = 1 });
         }
 
-        public IActionResult Question() 
+        public IActionResult Question(int id) 
         {
-            ViewBag.Index += 1; // Incrémentation du numéro des questions
-
-            if (ViewBag.Index <= _context.Questions.Count())
+            if (id <= _context.Questions.Count() && _context.Questions != null)
             {
-                // Récupération dans la mémoire
-                QuestionModel question = _context.Questions.Find(ViewBag.Index);
+                ViewBag.Id = id;
+                // Récupération dans la mémoire 
+                QuestionModel question = _context.Questions.Find(id);
 
                 return View(question);
             }
-            else
-            {
-                _db.DeleteQuestions(_context); // Fin des questions
-                return RedirectToAction("Categories"); // Retour aux catégories
-            }
+
+            _db.DeleteQuestions(_context); // Fin des questions
+            return RedirectToAction("Categories", "Categories"); // Retour aux catégories
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
