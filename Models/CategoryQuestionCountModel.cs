@@ -5,21 +5,24 @@ namespace TriviaNight.Models
     public class CategoryQuestionCountModel
     {
         [JsonPropertyName("total_num_of_questions")]
-        public int? TotalNumOfQuestions { get; set; }
+        public int TotalNumOfQuestions { get; set; }
 
         [JsonPropertyName("total_num_of_pending_questions")]
-        public int? TotalNumOfPendingQuestions { get; set; }
+        public int TotalNumOfPendingQuestions { get; set; }
 
         [JsonPropertyName("total_num_of_verified_questions")]
-        public int? TotalNumOfVerifiedQuestions { get; set; }
+        public int TotalNumOfVerifiedQuestions { get; set; }
 
         [JsonPropertyName("total_num_of_rejected_questions")]
-        public int? TotalNumOfRejectedQuestions { get; set; }
+        public int TotalNumOfRejectedQuestions { get; set; }
     }   
 
     public class CategoriesQuestionCountResponse
     {
+        [JsonPropertyName("overall")]
+        public CategoryQuestionCountModel? Overall { get; set; }
+
         [JsonPropertyName("categories")]
-        public List<Dictionary<int, CategoryQuestionCountModel>>? CategoriesQuestionCount { get; set; }
+        public Dictionary<string, CategoryQuestionCountModel>? CategoriesQuestionCount { get; set; }
     }
 }

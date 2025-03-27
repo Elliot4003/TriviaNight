@@ -1,0 +1,102 @@
+﻿@using System.Net
+
+@{
+    ViewData["Title"] = "Questions";
+}
+
+@model QuestionModel
+
+@{
+    List<string> answers = Model.IncorrectAnswers ?? [];
+
+    // Randomisation de l'ordre
+    Random rand = new Random();
+    if (Model.CorrectAnswer != null)
+    {
+        if (Model.Type == "multiple") answers.Insert(rand.Next(4), Model.CorrectAnswer);
+        else answers.Insert(rand.Next(2), Model.CorrectAnswer);
+    }
+}
+
+<style>
+    html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden
+    }
+</style>
+<div>
+    <div class="container">
+        <div class="row">
+            <div class="d-flex justify-content-center text-center align-items-center" style="height:45vh">
+                <h2>@WebUtility.HtmlDecode(Model.Question)</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="container justify-content-center text-center align-items-center">
+                @{
+                    if(Model.Type == "multiple") {
+                        <div class="row g-5">
+                            <div class="col">
+                                <button class="btn btn-outline-dark btn-lg shadow-none" value="@WebUtility.HtmlDecode(answers[0])" onclick="checkAnswer(this)">@WebUtility.HtmlDecode(answers[0])</button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-outline-dark btn-lg shadow-none" value="@WebUtility.HtmlDecode(answers[1])" onclick="checkAnswer(this)">@WebUtility.HtmlDecode(answers[1])</button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-outline-dark btn-lg shadow-none" value="@WebUtility.HtmlDecode(answers[2])" onclick="checkAnswer(this)">@WebUtility.HtmlDecode(answers[2])</button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-outline-dark btn-lg shadow-none" value="@WebUtility.HtmlDecode(answers[3])" onclick="checkAnswer(this)">@WebUtility.HtmlDecode(answers[3])</button>
+                            </div>
+                        </div>
+                    } else {
+                        <div class="row g-5">
+                            <div class="col">
+                                <button class="btn btn-outline-dark btn-lg shadow-none" value="@WebUtility.HtmlDecode(answers[0])" onclick="checkAnswer(this)">@answers[0]</button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-outline-dark btn-lg shadow-none" value="@WebUtility.HtmlDecode(answers[1])" onclick="checkAnswer(this)">@answers[1]</button>
+                            </div>
+                        </div>
+                    }
+                    <input id="correctAnswer" value="@WebUtility.HtmlDecode(Model.CorrectAnswer)" class="d-none" />
+                    <input id="questionId" value="@ViewBag.Id" class="d-none" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function checkAnswer(button) {
+
+            const correctAnswer = document.getElementById("correctAnswer").value;
+            const questionId = document.getElementById("questionId").value;
+            let nextId = parseInt(questionId, 10) + 1;
+
+            document.querySelectorAll(".btn").forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            // Vérification de la réponse puis redirection
+            if (button.value == correctAnswer) {
+                button.className = "btn btn-outline-success btn-lg shadow-none";
+                await sleep(3000);
+                window.location.href = String(nextId);
+            } else {
+                document.querySelector('button[value="' + correctAnswer + '"]').className = "btn btn-outline-success btn-lg shadow-none";
+                button.className = "btn btn-outline-danger btn-lg shadow-none";
+                await sleep(3000);
+                window.location.href = String(nextId);
+            }
+        }
+
+    </script>
+}
+
