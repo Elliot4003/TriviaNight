@@ -22,7 +22,7 @@ namespace TriviaNight.Controllers
 
         public IActionResult Questions(int category, int amount, string difficulty)
         {
-            QuestionRequestModel questionRequest = new QuestionRequestModel()
+            QuestionRequestModel questionRequest = new()
             {
                 Amount = amount,
                 Category = category,
@@ -39,15 +39,30 @@ namespace TriviaNight.Controllers
         {
             if (id <= _context.Questions.Count() && _context.Questions != null)
             {
+                ViewBag.Score = _context.Score;
+                ViewBag.QuestionCount = _context.Questions.Count();
                 ViewBag.Id = id;
-                // Récupération dans la mémoire 
-                QuestionModel question = _context.Questions.Find(id);
+                QuestionModel question = _context.Questions.Find(id); // Récupération dans la mémoire 
+                if (question.Answered || question.Id > _context.Questions.Where(x => !x.Answered).Select(x => x.Id).FirstOrDefault()) question = _context.Questions.Where(x => !x.Answered).FirstOrDefault(); // Si on est sur une question déjà répondue
 
                 return View(question);
             }
 
-            _db.DeleteQuestions(_context); // Fin des questions
+            // Fin des questions
+            _db.DeleteQuestions(_context);
+            _db.DeleteScore(_context);
+
             return RedirectToAction("Categories", "Categories"); // Retour aux catégories
+        }
+
+        [HttpPost]
+        public IActionResult SaveAnswerAndScore([FromBody] string data)
+        {
+            if (data.Contains("correct")) _db.SaveScore(_context);
+
+            int id = Int32.Parse(data.Split("_")[0]);
+            _db.SaveAnswer(id, _context);
+            return Ok();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

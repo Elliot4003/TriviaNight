@@ -35,9 +35,32 @@ namespace TriviaNight.Services
             context.SaveChanges();
         }
 
+        public void SaveScore(TriviaNightDbContext context)
+        {
+            context.Score += 1 ;
+            context.SaveChanges();
+        }
+
+        public void SaveAnswer(int id, TriviaNightDbContext context)
+        {
+            QuestionModel question = context.Questions.Find(id);
+            if (question != null)
+            {
+                context.Entry(question).State = EntityState.Modified;
+                question.Answered = true;
+                context.SaveChanges();
+            }
+        }
+
         public void DeleteQuestions(TriviaNightDbContext context)
         {
             context.Questions.RemoveRange(context.Questions);
+            context.SaveChanges();
+        }
+
+        public void DeleteScore(TriviaNightDbContext context)
+        {
+            context.Score = 0;
             context.SaveChanges();
         }
     }

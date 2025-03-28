@@ -26,7 +26,7 @@ namespace TriviaNight.Controllers
         {
             _db.DeleteQuestions(_context); // Suppression des potentielles questions
 
-            CategoriesList categories = new CategoriesList();
+            CategoriesList categories = new();
             if (_context.Categories.Count() == 0) 
             {
                 categories = _api.CategoryRequest(); // Première récupération des catégories

@@ -38,7 +38,7 @@ namespace TriviaNight.Services
         [HttpGet]
         public CategoriesList CategoryRequest()
         {
-            CategoriesList categories = new ();
+            CategoriesList categories = new();
             HttpResponseMessage response = this.Client.GetAsync("api_category.php").Result;
             CategoryQuestionCountResponse categoryQuestionCount = new();
 
@@ -46,7 +46,7 @@ namespace TriviaNight.Services
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 var result = JsonSerializer.Deserialize<CategoriesList>(data);
-                categories = result ?? new CategoriesList();
+                categories = result ?? new();
                 foreach (CategoryModel category in categories.Categories)
                 {
                     categoryQuestionCount = CategoryQuestionCount(category.Id);
@@ -62,14 +62,14 @@ namespace TriviaNight.Services
         [HttpGet]
         private QuestionCountResponse QuestionCount()
         {
-            QuestionCountResponse questionCount = new ();
+            QuestionCountResponse questionCount = new();
             HttpResponseMessage response = this.Client.GetAsync("api_count_global.php").Result;
 
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 var result = JsonSerializer.Deserialize<QuestionCountResponse>(data);
-                questionCount = result ?? new QuestionCountResponse();
+                questionCount = result ?? new();
             }
 
             return questionCount;
@@ -85,7 +85,7 @@ namespace TriviaNight.Services
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 var result = JsonSerializer.Deserialize<CategoryQuestionCountResponse>(data);
-                categoryQuestionCount = result ?? new CategoryQuestionCountResponse();
+                categoryQuestionCount = result ?? new();
             }
 
             return categoryQuestionCount;
