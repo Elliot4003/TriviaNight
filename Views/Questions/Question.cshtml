@@ -14,7 +14,14 @@
     if (Model.CorrectAnswer != null)
     {
         if (Model.Type == "multiple") answers.Insert(rand.Next(4), Model.CorrectAnswer);
-        else answers.Insert(rand.Next(2), Model.CorrectAnswer);
+        else {
+            if(Model.CorrectAnswer == "True")
+            {
+                answers.Insert(0, Model.CorrectAnswer);
+            } else {
+                answers.Insert(1, Model.CorrectAnswer);
+            }
+        }
     }
 }
 
@@ -82,16 +89,17 @@
 
             document.querySelectorAll(".btn").forEach(btn => {
                 btn.disabled = true;
+                btn.style.opacity = "1";
             });
             
             // Vérification de la réponse puis redirection
             if (button.value == correctAnswer) {
-                button.className = "btn btn-outline-success btn-lg shadow-none";
-                await sleep(3000);
+                button.className = "btn btn-success btn-lg shadow-none";
+                await sleep(2000);
                 window.location.href = String(nextId);
             } else {
-                document.querySelector('button[value="' + correctAnswer + '"]').className = "btn btn-outline-success btn-lg shadow-none";
-                button.className = "btn btn-outline-danger btn-lg shadow-none";
+                document.querySelector('button[value="' + correctAnswer + '"]').className = "btn btn-success btn-lg shadow-none";
+                button.className = "btn btn-danger btn-lg shadow-none";
                 await sleep(3000);
                 window.location.href = String(nextId);
             }

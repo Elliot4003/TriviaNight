@@ -1,28 +1,29 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace TriviaNight.Models
 {
     public class CategoryQuestionCountModel
     {
-        [JsonPropertyName("total_num_of_questions")]
-        public int TotalNumOfQuestions { get; set; }
+        [JsonPropertyName("total_question_count")]
+        public int TotalQuestionCount { get; set; }
 
-        [JsonPropertyName("total_num_of_pending_questions")]
-        public int TotalNumOfPendingQuestions { get; set; }
+        [JsonPropertyName("total_easy_question_count")]
+        public int TotalEasyQuestionCount { get; set; }
 
-        [JsonPropertyName("total_num_of_verified_questions")]
-        public int TotalNumOfVerifiedQuestions { get; set; }
+        [JsonPropertyName("total_medium_question_count")]
+        public int TotalMediumQuestionCount { get; set; }
 
-        [JsonPropertyName("total_num_of_rejected_questions")]
-        public int TotalNumOfRejectedQuestions { get; set; }
+        [JsonPropertyName("total_hard_question_count")]
+        public int TotalHardQuestionCount { get; set; }
     }   
 
-    public class CategoriesQuestionCountResponse
+    public class CategoryQuestionCountResponse
     {
-        [JsonPropertyName("overall")]
-        public CategoryQuestionCountModel? Overall { get; set; }
+        [JsonPropertyName("category_id")]
+        public int Id { get; set; }
 
-        [JsonPropertyName("categories")]
-        public Dictionary<string, CategoryQuestionCountModel>? CategoriesQuestionCount { get; set; }
+        [JsonPropertyName("category_question_count")]
+        public CategoryQuestionCountModel? CategoryQuestionCount { get; set; }
     }
 }

@@ -35,8 +35,7 @@ namespace TriviaNight.Controllers
             else
             {
                 categories.Categories = []; // Initialisation
-                List<CategoryModel> categoriesList = _context.Categories.ToList(); // Récupération dans la mémoire
-                foreach (CategoryModel category in categoriesList) 
+                foreach (CategoryModel category in _context.Categories) 
                 {
                     categories.Categories.Add(category);
                 }
