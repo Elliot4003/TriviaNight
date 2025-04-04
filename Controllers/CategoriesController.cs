@@ -25,6 +25,7 @@ namespace TriviaNight.Controllers
         public IActionResult Categories()
         {
             _db.DeleteQuestions(_context); // Suppression des potentielles questions
+            _db.DeleteScore(_context); // Suppression du potentiel score
 
             CategoriesList categories = new();
             if (_context.Categories.Count() == 0) 

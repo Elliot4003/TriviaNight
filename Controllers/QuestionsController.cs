@@ -39,11 +39,11 @@ namespace TriviaNight.Controllers
         {
             if (id <= _context.Questions.Count() && _context.Questions != null)
             {
-                ViewBag.Score = _context.Score;
+                if (id == 1) _db.InitializeScore(_context);
+                ViewBag.Score = _context.Score.Find(1).Score;
                 ViewBag.QuestionCount = _context.Questions.Count();
-                ViewBag.Id = id;
-                QuestionModel question = _context.Questions.Find(id); // Récupération dans la mémoire 
-                if (question.Answered || question.Id > _context.Questions.Where(x => !x.Answered).Select(x => x.Id).FirstOrDefault()) question = _context.Questions.Where(x => !x.Answered).FirstOrDefault(); // Si on est sur une question déjà répondue
+                QuestionModel question = _context.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).FirstOrDefault(); // Récupération dans la mémoire 
+                ViewBag.Id = question.Id;
 
                 return View(question);
             }
@@ -58,7 +58,7 @@ namespace TriviaNight.Controllers
         [HttpPost]
         public IActionResult SaveAnswerAndScore([FromBody] string data)
         {
-            if (data.Contains("correct")) _db.SaveScore(_context);
+            if (data.Contains("_correct")) _db.SaveScore(_context);
 
             int id = Int32.Parse(data.Split("_")[0]);
             _db.SaveAnswer(id, _context);

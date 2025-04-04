@@ -8,6 +8,8 @@ namespace TriviaNight.Interfaces
 
         public void SaveQuestions(QuestionsList questions, TriviaNightDbContext context);
 
+        public void InitializeScore(TriviaNightDbContext context);
+
         public void SaveScore(TriviaNightDbContext context);
 
         public void SaveAnswer(int id, TriviaNightDbContext context);
