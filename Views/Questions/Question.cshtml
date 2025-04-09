@@ -8,6 +8,7 @@
 
 @{
     List<string> answers = Model.IncorrectAnswers ?? [];
+    string difficulty = "";
 
     // Randomisation de l'ordre
     Random rand = new Random();
@@ -23,6 +24,7 @@
             }
         }
     }
+    if (Model.Difficulty != null) difficulty = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Difficulty.ToLower());
 }
 
 <style>
@@ -36,7 +38,7 @@
     <div class="container">
         <div class="row">
             <p>
-                <strong>@Model.Category</strong> - @{ if (Model.Difficulty != null) System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Difficulty.ToLower()); }</ p >
+                <strong>@Model.Category</strong> - @difficulty</p>
         </div>
         <div class="row">
             <p><strong>Score :</strong> @ViewBag.Score/@ViewBag.QuestionCount</p>

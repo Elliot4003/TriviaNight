@@ -42,13 +42,13 @@ namespace TriviaNight.Controllers
                 if (id == 1) _db.InitializeScore();
                 ViewBag.Score = _db.GetScore().Score;
                 ViewBag.QuestionCount = _db.GetQuestionCount();
-                QuestionModel question = questions.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).FirstOrDefault() ?? new(); // Première question non-répondue
+                QuestionModel question = questions.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).FirstOrDefault() ?? new(); // Première question non répondue
                 ViewBag.Id = question.Id;
 
                 return View(question);
             }
 
-            return RedirectToAction("Score"); // Ecran du score
+            return RedirectToAction("Score");
         }
 
         [HttpPost]
@@ -63,20 +63,23 @@ namespace TriviaNight.Controllers
 
         public IActionResult Score()
         {
-            ScoreModel score = _db.GetScore() ?? new(); // Score unique avec un id à 1 (temporaire)
+            ScoreModel score = _db.GetScore() ?? new();
+            int questionCount = _db.GetQuestionCount();
 
-            switch (score.Score)
+            int perf = score.Score > 0 ? score.Score / questionCount * 10 : 0; // Calcul de la performance
+
+            switch (perf)
             {
-                case var _ when score.Score <= 3:
+                case var _ when perf <= 3:
                     score.ScoreResult = ScoreResultEnum.Bad;
                     break;
-                case var _ when (score.Score > 3 && score.Score <= 6):
+                case var _ when (perf > 3 && perf <= 6):
                     score.ScoreResult = ScoreResultEnum.Medium;
                     break;
-                case var _ when (score.Score > 6 && score.Score <= 9):
+                case var _ when (perf > 6 && perf <= 9):
                     score.ScoreResult = ScoreResultEnum.Good;
                     break;
-                case var _ when score.Score == 10:
+                case var _ when perf == 10:
                     score.ScoreResult = ScoreResultEnum.Perfect;
                     break;
                 default:
@@ -86,6 +89,11 @@ namespace TriviaNight.Controllers
             score.QuestionCount = _db.GetQuestionCount();
 
             return View(score);
+        }
+
+        public IActionResult Categories()
+        {
+            return RedirectToAction("Categories", "Categories");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
