@@ -1,0 +1,37 @@
+﻿@*
+   Si le score est mauvais, recherche de GIF avec des mots clés comme "disappointed", "sad", etc
+   Si le score est moyen, recherche de GIF avec des mots clé comme "encourage", "keep it up", etc
+   Si le score est bon, recherche de GIF avec des mots clé comme "bravo", "champion", etc
+   Si le score est parfait, recherche de GIF avec des mots clé comme "amazing", "incredible", etc
+*@
+
+@{
+    ViewData["Title"] = "Score";
+}
+
+@model ScoreModel
+
+<style>
+    html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="d-flex justify-content-center text-center align-items-center">
+            <h2>Score</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="d-flex justify-content-center text-center align-items-center">
+            <div class ="col" style="font-size:5vw">
+                @Model.Score / @Model.QuestionCount
+            </div>
+            <div class="col">
+                <p>@Model.Score / 10</p>
+            </div>
+        </div>
+    </div>
+</div>

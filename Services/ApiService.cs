@@ -47,12 +47,19 @@ namespace TriviaNight.Services
                 string data = response.Content.ReadAsStringAsync().Result;
                 var result = JsonSerializer.Deserialize<CategoriesList>(data);
                 categories = result ?? new();
-                foreach (CategoryModel category in categories.Categories)
+
+                if (categories.Categories != null) 
                 {
-                    categoryQuestionCount = CategoryQuestionCount(category.Id);
-                    category.EasyQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalEasyQuestionCount;
-                    category.MediumQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalMediumQuestionCount;
-                    category.HardQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalHardQuestionCount;
+                    foreach (CategoryModel category in categories.Categories)
+                    {
+                        categoryQuestionCount = CategoryQuestionCount(category.Id);
+                        if (categoryQuestionCount.CategoryQuestionCount != null) 
+                        {
+                            category.EasyQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalEasyQuestionCount;
+                            category.MediumQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalMediumQuestionCount;
+                            category.HardQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalHardQuestionCount;
+                        }
+                    }
                 }
             }
 

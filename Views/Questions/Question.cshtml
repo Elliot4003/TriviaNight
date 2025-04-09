@@ -35,7 +35,8 @@
 <div class="position-absolute start-0 p-2">
     <div class="container">
         <div class="row">
-            <p><strong>@Model.Category</strong> - @System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Difficulty.ToLower())</p>
+            <p>
+                <strong>@Model.Category</strong> - @{ if (Model.Difficulty != null) System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Difficulty.ToLower()); }</ p >
         </div>
         <div class="row">
             <p><strong>Score :</strong> @ViewBag.Score/@ViewBag.QuestionCount</p>
@@ -100,19 +101,14 @@
 
             const questionId = document.getElementById("questionId").value;
 
-            fetch('/Questions/SaveAnswerAndScore', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body : JSON.stringify(result ? questionId + "_correct" : questionId + "_incorrect")
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log("Score sauvegardé");
-                } else {
-                    console.error("Erreur lors de l'enregistrement du score");
-                }
-            })
-            .catch(error => console.error("Erreur Fetch:", error));
+            console.log("test");
+
+            return fetch('/Questions/SaveAnswerAndScore', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body : JSON.stringify(result ? questionId + "_correct" : questionId + "_incorrect")
+                })
+                .catch(error => console.error("Erreur Fetch:", error));
         }
 
         async function checkAnswer(button) {
@@ -130,13 +126,13 @@
             if (button.value == correctAnswer) {
                 button.className = "btn btn-success btn-lg shadow-none";
                 await sleep(2000);
-                saveAnswerAndScore(true);
+                await saveAnswerAndScore(true);
                 window.location.href = String(nextId);
             } else {
                 document.querySelector('button[value="' + correctAnswer + '"]').className = "btn btn-success btn-lg shadow-none";
                 button.className = "btn btn-danger btn-lg shadow-none";
                 await sleep(3000);
-                saveAnswerAndScore(false);
+                await saveAnswerAndScore(false);
                 window.location.href = String(nextId);
             }
         }

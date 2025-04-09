@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
@@ -11,35 +10,29 @@ namespace TriviaNight.Controllers
         private readonly ILogger<CategoriesController> _logger;
         private readonly IApi _api;
         private readonly IDb _db;
-        private readonly TriviaNightDbContext _context;
 
-        public CategoriesController(ILogger<CategoriesController> logger, IApi api, IDb db, TriviaNightDbContext context)
+        public CategoriesController(ILogger<CategoriesController> logger, IApi api, IDb db)
         {
             _logger = logger;
             _api = api;
             _db = db;
-            _context = context;
         }
 
         [HttpGet]
         public IActionResult Categories()
         {
-            _db.DeleteQuestions(_context); // Suppression des potentielles questions
-            _db.DeleteScore(_context); // Suppression du potentiel score
+            _db.DeleteQuestions(); // Suppression des potentielles questions
+            _db.DeleteScore(); // Suppression du potentiel score
 
             CategoriesList categories = new();
-            if (_context.Categories.Count() == 0) 
+            if (_db.GetCategoryCount() == 0) 
             {
                 categories = _api.CategoryRequest(); // Première récupération des catégories
-                _db.SaveCategories(categories, _context);
+                _db.SaveCategories(categories);
             } 
             else
             {
-                categories.Categories = []; // Initialisation
-                foreach (CategoryModel category in _context.Categories) 
-                {
-                    categories.Categories.Add(category);
-                }
+                categories = _db.GetCategories(); // Récupération en mémoire
             }
 
             return View(categories);

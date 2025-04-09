@@ -24,127 +24,130 @@
         <div class="container">
             <div class="row">
                 @{
-                    string collapse;
-                    string heading;
-                    int i = 0;
-                    foreach (CategoryModel category in Model.Categories)
+                    if (Model.Categories != null)
                     {
-                        if (category.EasyQuestionCount >= 10 || category.MediumQuestionCount >= 10 || category.HardQuestionCount >= 10)
+                        string collapse;
+                        string heading;
+                        int i = 0;
+                        foreach (CategoryModel category in Model.Categories)
                         {
-                            i++;
-                            collapse = "collapse" + i.ToString();
-                            heading = "heading" + i.ToString();
+                            if (category.EasyQuestionCount >= 10 || category.MediumQuestionCount >= 10 || category.HardQuestionCount >= 10)
+                            {
+                                i++;
+                                collapse = "collapse" + i.ToString();
+                                heading = "heading" + i.ToString();
 
-                            <div class="col-md-6">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="@heading">
-                                        <button class="accordion-button collapsed btn-outline-dark shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#@collapse" aria-expanded="false" aria-controls="@collapse">
-                                            @category.Name
-                                        </button>
-                                    </h2>
-                                    <div id="@collapse" class="accordion-collapse collapse" aria-labelledby="@heading" data-bs-parent="#accordion">
-                                        <div class="accordion-body">
-                                            <form asp-action="Questions" asp-controller="Questions" method="post">
-                                                <div class="container">
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <input class="visually-hidden" value="@category.Id" name="category" />
-                                                                <label for="amount" class="start-0">Amount of questions</label>
-                                                                <select class="form-control shadow-none mt-2" name="amount" id="amountEasy_@category.Id">
-                                                                @{
-                                                                    <option>10</option>
-                                                                    if (category.EasyQuestionCount >= 20)
-                                                                    {
-                                                                        <option>20</option>
-                                                                    }
-                                                                    if (category.EasyQuestionCount >= 30)
-                                                                    {
-                                                                    <option>30</option>
-                                                                    }
-                                                                    if (category.EasyQuestionCount >= 40)
-                                                                    {
-                                                                    <option>40</option>
-                                                                    }
-                                                                    if (category.EasyQuestionCount >= 50)
-                                                                    {
-                                                                    <option>50</option>
-                                                                    }
-                                                                }
-                                                                </select>
-                                                                <select class="form-control shadow-none mt-2" name="amount" id="amountMedium_@category.Id">
-                                                                @{
-                                                                    <option>10</option>
-                                                                    if (category.MediumQuestionCount >= 20)
-                                                                    {
-                                                                        <option>20</option>
-                                                                    }
-                                                                    if (category.MediumQuestionCount >= 30)
-                                                                    {
-                                                                        <option>30</option>
-                                                                    }
-                                                                    if (category.MediumQuestionCount >= 40)
-                                                                    {
-                                                                        <option>40</option>
-                                                                    }
-                                                                    if (category.MediumQuestionCount >= 50)
-                                                                    {
-                                                                        <option>50</option>
-                                                                    }
-                                                                }
-                                                                </select>
-                                                                <select class="form-control shadow-none mt-2" name="amount" id="amountHard_@category.Id">
-                                                                @{
-                                                                    <option>10</option>
-                                                                    if (category.HardQuestionCount >= 20)
-                                                                    {
-                                                                        <option>20</option>
-                                                                    }
-                                                                    if (category.HardQuestionCount >= 30)
-                                                                    {
-                                                                        <option>30</option>
-                                                                    }
-                                                                    if (category.HardQuestionCount >= 40)
-                                                                    {
-                                                                        <option>40</option>
-                                                                    }
-                                                                    if (category.HardQuestionCount >= 50)
-                                                                    {
-                                                                        <option>50</option>
-                                                                    }
-                                                                }
-                                                                </select>
+                                <div class="col-md-6">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="@heading">
+                                            <button class="accordion-button collapsed btn-outline-dark shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#@collapse" aria-expanded="false" aria-controls="@collapse">
+                                                @category.Name
+                                            </button>
+                                        </h2>
+                                        <div id="@collapse" class="accordion-collapse collapse" aria-labelledby="@heading" data-bs-parent="#accordion">
+                                            <div class="accordion-body">
+                                                <form asp-action="Questions" asp-controller="Questions" method="post">
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <input class="visually-hidden" value="@category.Id" name="category" />
+                                                                    <label for="amountEasy_@category.Id" class="start-0">Amount of questions</label>
+                                                                    <select class="form-control shadow-none mt-2" name="amount" id="amountEasy_@category.Id">
+                                                                        @{
+                                                                            <option>10</option>
+                                                                            if (category.EasyQuestionCount >= 20)
+                                                                            {
+                                                                                <option>20</option>
+                                                                            }
+                                                                            if (category.EasyQuestionCount >= 30)
+                                                                            {
+                                                                                <option>30</option>
+                                                                            }
+                                                                            if (category.EasyQuestionCount >= 40)
+                                                                            {
+                                                                                <option>40</option>
+                                                                            }
+                                                                            if (category.EasyQuestionCount >= 50)
+                                                                            {
+                                                                                <option>50</option>
+                                                                            }
+                                                                        }
+                                                                    </select>
+                                                                    <select class="form-control shadow-none mt-2" name="amount" id="amountMedium_@category.Id">
+                                                                        @{
+                                                                            <option>10</option>
+                                                                            if (category.MediumQuestionCount >= 20)
+                                                                            {
+                                                                                <option>20</option>
+                                                                            }
+                                                                            if (category.MediumQuestionCount >= 30)
+                                                                            {
+                                                                                <option>30</option>
+                                                                            }
+                                                                            if (category.MediumQuestionCount >= 40)
+                                                                            {
+                                                                                <option>40</option>
+                                                                            }
+                                                                            if (category.MediumQuestionCount >= 50)
+                                                                            {
+                                                                                <option>50</option>
+                                                                            }
+                                                                        }
+                                                                    </select>
+                                                                    <select class="form-control shadow-none mt-2" name="amount" id="amountHard_@category.Id">
+                                                                        @{
+                                                                            <option>10</option>
+                                                                            if (category.HardQuestionCount >= 20)
+                                                                            {
+                                                                                <option>20</option>
+                                                                            }
+                                                                            if (category.HardQuestionCount >= 30)
+                                                                            {
+                                                                                <option>30</option>
+                                                                            }
+                                                                            if (category.HardQuestionCount >= 40)
+                                                                            {
+                                                                                <option>40</option>
+                                                                            }
+                                                                            if (category.HardQuestionCount >= 50)
+                                                                            {
+                                                                                <option>50</option>
+                                                                            }
+                                                                        }
+                                                                    </select>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="difficulty">Difficulty</label>
-                                                                <select class="form-control shadow-none mt-2" name="difficulty" id="difficulty_@category.Id" onchange="categoryQuestionCountControl(this)" onload="categoryQuestionCountControl(this)">
-                                                                    @{
-                                                                        if (category.EasyQuestionCount >= 10) 
-                                                                        {
-                                                                            <option value="Easy">Easy</option>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="difficulty_@category.Id">Difficulty</label>
+                                                                    <select class="form-control shadow-none mt-2" name="difficulty" id="difficulty_@category.Id" onchange="categoryQuestionCountControl(this)" onload="categoryQuestionCountControl(this)">
+                                                                        @{
+                                                                            if (category.EasyQuestionCount >= 10)
+                                                                            {
+                                                                                <option value="Easy">Easy</option>
+                                                                            }
+                                                                            if (category.MediumQuestionCount >= 10)
+                                                                            {
+                                                                                <option value="Medium">Medium</option>
+                                                                            }
+                                                                            if (category.HardQuestionCount >= 10)
+                                                                            {
+                                                                                <option value="Hard">Hard</option>
+                                                                            }
                                                                         }
-                                                                        if (category.MediumQuestionCount >= 10)
-                                                                        {
-                                                                            <option value="Medium">Medium</option>
-                                                                        }
-                                                                        if (category.HardQuestionCount >= 10)
-                                                                        {
-                                                                            <option value="Hard">Hard</option>
-                                                                        }
-                                                                    }
-                                                                </select>
+                                                                    </select>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <button type="submit" class="btn btn-outline-dark shadow-none mt-3">Go !</button>
-                                            </form>
+                                                    <button type="submit" class="btn btn-outline-dark shadow-none mt-3">Go !</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         }
                     }
                 }
