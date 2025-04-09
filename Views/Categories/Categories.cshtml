@@ -52,8 +52,8 @@
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
                                                                     <input class="visually-hidden" value="@category.Id" name="category" />
-                                                                    <label for="amountEasy_@category.Id" class="start-0">Amount of questions</label>
-                                                                    <select class="form-control shadow-none mt-2" name="amount" id="amountEasy_@category.Id">
+                                                                    <label id="labelEasy_@category.Id" for="amountEasy_@category.Id" class="start-0">Amount of questions</label>
+                                                                    <select class="form-control shadow-none mt-2" id="amountEasy_@category.Id">
                                                                         @{
                                                                             <option>10</option>
                                                                             if (category.EasyQuestionCount >= 20)
@@ -74,7 +74,8 @@
                                                                             }
                                                                         }
                                                                     </select>
-                                                                    <select class="form-control shadow-none mt-2" name="amount" id="amountMedium_@category.Id">
+                                                                    <label id="labelMedium_@category.Id" for="amountMedium_@category.Id" class="start-0">Amount of questions</label>
+                                                                    <select class="form-control shadow-none mt-2" id="amountMedium_@category.Id">
                                                                         @{
                                                                             <option>10</option>
                                                                             if (category.MediumQuestionCount >= 20)
@@ -95,9 +96,10 @@
                                                                             }
                                                                         }
                                                                     </select>
-                                                                    <select class="form-control shadow-none mt-2" name="amount" id="amountHard_@category.Id">
+                                                                    <label id="labelHard_@category.Id" for="amountHard_@category.Id" class="start-0">Amount of questions</label>
+                                                                    <select class="form-control shadow-none mt-2" id="amountHard_@category.Id">
                                                                         @{
-                                                                            <option>10</option>
+                                                                            <option >10</option>
                                                                             if (category.HardQuestionCount >= 20)
                                                                             {
                                                                                 <option>20</option>
@@ -158,6 +160,8 @@
 @section Scripts {
     <script type="text/javascript">
 
+        localStorage.removeItem("savedGif");
+
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll("select[name='difficulty']").forEach(difficulty => {
                 categoryQuestionCountControl(difficulty);
@@ -168,24 +172,56 @@
 
             const categoryId = difficulty.id.split("_")[1];
             const amountEasy = document.getElementById("amountEasy_" + categoryId);
+            const labelEasy = document.getElementById("labelEasy_" + categoryId);
+
             const amountMedium = document.getElementById("amountMedium_" + categoryId);
+            const labelMedium= document.getElementById("labelMedium_" + categoryId);
+
             const amountHard = document.getElementById("amountHard_" + categoryId);
+            const labelHard = document.getElementById("labelHard_" + categoryId);
 
             switch(difficulty.value) {
                 case "Easy" :
                     amountEasy.style.display = "block";
+                    labelEasy.style.display = "block";
+                    amountEasy.name = "amount";
+
                     amountMedium.style.display = "none";
+                    labelMedium.style.display = "none";
+                    amountMedium.name = "";
+
                     amountHard.style.display = "none";
+                    labelHard.style.display = "none";
+                    amountHard.name = "";
+
                     break;
                 case "Medium" :
                     amountEasy.style.display = "none";
+                    labelEasy.style.display = "none";
+                    amountEasy.name = "";
+
                     amountMedium.style.display = "block";
+                    labelMedium.style.display = "block";
+                    amountMedium.name = "amount";
+
                     amountHard.style.display = "none";
+                    labelHard.style.display = "none";
+                    amountHard.name = "";
+
                     break;
                 case "Hard" :
                     amountEasy.style.display = "none";
+                    labelEasy.style.display = "none";
+                    amountEasy.name = "";
+
                     amountMedium.style.display = "none";
+                    labelMedium.style.display = "none";
+                    amountMedium.name = "";
+
                     amountHard.style.display = "block";
+                    labelHard.style.display = "block";
+                    amountHard.name = "amount";
+
                     break;
                 default :
                     break;
