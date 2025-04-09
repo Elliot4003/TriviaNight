@@ -13,7 +13,11 @@ namespace TriviaNight.Models
         [JsonPropertyName("name")]
         public string? Name { get; set; }
 
-        public int QuestionCount { get; set; }
+        public int EasyQuestionCount { get; set; }
+
+        public int MediumQuestionCount { get; set; }
+
+        public int HardQuestionCount { get; set; }
     }
 
     public class CategoriesList

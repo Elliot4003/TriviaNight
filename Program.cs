@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
 using TriviaNight.Services;
@@ -8,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IApi, ApiService>();
-builder.Services.AddSingleton<IDb, DbService>();
+builder.Services.AddScoped<IDb, DbService>();
 builder.Services.AddDbContext<TriviaNightDbContext>(options => 
     options.UseInMemoryDatabase("TriviaNightDb")
 );

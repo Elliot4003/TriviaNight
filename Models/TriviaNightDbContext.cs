@@ -8,6 +8,8 @@ namespace TriviaNight.Models
 
         public DbSet<CategoryModel> Categories { get; set; }
 
+        public DbSet<ScoreModel> Score { get; set; }
+
         public TriviaNightDbContext(DbContextOptions<TriviaNightDbContext> options) 
             : base(options)
         {

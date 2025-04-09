@@ -38,18 +38,28 @@ namespace TriviaNight.Services
         [HttpGet]
         public CategoriesList CategoryRequest()
         {
-            CategoriesList categories = new CategoriesList();
+            CategoriesList categories = new();
             HttpResponseMessage response = this.Client.GetAsync("api_category.php").Result;
-            CategoriesQuestionCountResponse categoryQuestionCount = CategoryCount();
+            CategoryQuestionCountResponse categoryQuestionCount = new();
 
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 var result = JsonSerializer.Deserialize<CategoriesList>(data);
-                categories = result ?? new CategoriesList();
-                foreach (CategoryModel category in categories.Categories)
+                categories = result ?? new();
+
+                if (categories.Categories != null) 
                 {
-                    category.QuestionCount = categoryQuestionCount.CategoriesQuestionCount.Where(x => x.Key.ToString() == category.Id.ToString()).Select(x => x.Value).FirstOrDefault().TotalNumOfVerifiedQuestions;
+                    foreach (CategoryModel category in categories.Categories)
+                    {
+                        categoryQuestionCount = CategoryQuestionCount(category.Id);
+                        if (categoryQuestionCount.CategoryQuestionCount != null) 
+                        {
+                            category.EasyQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalEasyQuestionCount;
+                            category.MediumQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalMediumQuestionCount;
+                            category.HardQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalHardQuestionCount;
+                        }
+                    }
                 }
             }
 
@@ -57,20 +67,35 @@ namespace TriviaNight.Services
         }
 
         [HttpGet]
-        private CategoriesQuestionCountResponse CategoryCount()
+        private QuestionCountResponse QuestionCount()
         {
-            CategoriesQuestionCountResponse categoryQuestionCount = new CategoriesQuestionCountResponse();
+            QuestionCountResponse questionCount = new();
             HttpResponseMessage response = this.Client.GetAsync("api_count_global.php").Result;
 
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
-                var result = JsonSerializer.Deserialize<CategoriesQuestionCountResponse>(data);
-                categoryQuestionCount = result ?? new CategoriesQuestionCountResponse();
+                var result = JsonSerializer.Deserialize<QuestionCountResponse>(data);
+                questionCount = result ?? new();
+            }
+
+            return questionCount;
+        }
+
+        [HttpGet]
+        private CategoryQuestionCountResponse CategoryQuestionCount(int id)
+        {
+            CategoryQuestionCountResponse categoryQuestionCount = new();
+            HttpResponseMessage response = this.Client.GetAsync("api_count.php?category=" + id).Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                var result = JsonSerializer.Deserialize<CategoryQuestionCountResponse>(data);
+                categoryQuestionCount = result ?? new();
             }
 
             return categoryQuestionCount;
         }
-
     }
 }

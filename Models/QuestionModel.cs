@@ -26,6 +26,8 @@ namespace TriviaNight.Models
 
         [JsonPropertyName("incorrect_answers")]
         public List<String>? IncorrectAnswers { get; set; }
+
+        public bool Answered { get; set; }
     }
 
     public class QuestionsList
