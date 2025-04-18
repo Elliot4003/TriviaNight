@@ -38,6 +38,11 @@ namespace TriviaNight.Controllers
             return View(categories);
         }
 
+        public IActionResult Contribute()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

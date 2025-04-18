@@ -14,6 +14,10 @@ namespace TriviaNight.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Enregistre les catégories dans le contexte au premier appel de l'API OTDB
+        /// </summary>
+        /// <param name="categories"></param>
         public void SaveCategories(CategoriesList categories)
         {
             if (categories.Categories != null) 
@@ -28,6 +32,10 @@ namespace TriviaNight.Services
             }
         }
 
+        /// <summary>
+        /// Enregistre les questions dans le contexte au premier appel de l'API OTDB
+        /// </summary>
+        /// <param name="questions"></param>
         public void SaveQuestions(QuestionsList questions)
         {
             if (questions.Questions != null)
@@ -44,17 +52,9 @@ namespace TriviaNight.Services
             }
         }
 
-        public void InitializeScore()
-        {
-            ScoreModel score = new ScoreModel()
-            {
-                Id = 1,
-                Score = 0
-            };
-            _context.Score.Add(score);
-            _context.SaveChanges();
-        }
-
+        /// <summary>
+        /// Enregistre le score dans le contexte après la réponse à une question
+        /// </summary>
         public void SaveScore()
         {
             ScoreModel score = _context.Score.Find(1) ?? new();
@@ -66,6 +66,10 @@ namespace TriviaNight.Services
             }
         }
 
+        /// <summary>
+        /// Marque une réponse comme "répondue"
+        /// </summary>
+        /// <param name="id"></param>
         public void SaveAnswer(int id)
         {
             QuestionModel question = _context.Questions.Find(id) ?? new();
@@ -76,29 +80,62 @@ namespace TriviaNight.Services
             }
         }
 
+        /// <summary>
+        /// Supprime les questions du contexte
+        /// </summary>
         public void DeleteQuestions()
         {
             _context.Questions.RemoveRange(_context.Questions);
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// Supprime le score du contexte
+        /// </summary>
         public void DeleteScore()
         {
             _context.Score.RemoveRange(_context.Score);
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// Initialise le score pour une session de questions
+        /// </summary>
+        private void InitializeScore()
+        {
+            ScoreModel score = new ScoreModel()
+            {
+                Id = 1,
+                Score = 0
+            };
+            _context.Score.Add(score);
+            _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Retourne le score
+        /// </summary>
+        /// <returns>Le score</returns>
         public ScoreModel GetScore()
         {
+            if (_context.Score.Find(1) == null) InitializeScore();
             ScoreModel score = _context.Score.Find(1) ?? new();
             return score;
         }
 
+        /// <summary>
+        /// Retourne le nombre de catégories dans le contexte
+        /// </summary>
+        /// <returns>Le nombre de catégories</returns>
         public int GetCategoryCount()
         {
             return _context.Categories.Count();
         }
 
+        /// <summary>
+        /// Retourne les catégories présentes dans le contexte
+        /// </summary>
+        /// <returns>Les catégories</returns>
         public CategoriesList GetCategories()
         {
             CategoriesList categories = new();
@@ -110,11 +147,19 @@ namespace TriviaNight.Services
             return categories;
         }
 
+        /// <summary>
+        /// Retourne le nombre de questions dans le contexte
+        /// </summary>
+        /// <returns></returns>
         public int GetQuestionCount()
         {
             return _context.Questions.Count();
         }
 
+        /// <summary>
+        /// Retourne les questions présentes dans le contexte
+        /// </summary>
+        /// <returns>Les questions</returns>
         public QuestionsList GetQuestions() 
         {
             QuestionsList questions = new();

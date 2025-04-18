@@ -16,10 +16,10 @@
 
 </style>
 
-<div class="d-flex justify-content-center mt-4">
+<div class="d-flex justify-content-center mt-5">
     <h1>Categories</h1>
 </div>
-<div class="d-flex justify-content-center align-items-center text-center mt-4">
+<div class="d-flex justify-content-center align-items-center text-center mt-5">
     <div class="accordion accordion-flush" id="accordion">
         <div class="container">
             <div class="row">
@@ -49,6 +49,27 @@
                                                 <form asp-action="Questions" asp-controller="Questions" method="post">
                                                     <div class="container">
                                                         <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="difficulty_@category.Id">Difficulty</label>
+                                                                    <select class="form-control shadow-none mt-2" name="difficulty" id="difficulty_@category.Id" onchange="categoryQuestionCountControl(this)" onload="categoryQuestionCountControl(this)">
+                                                                        @{
+                                                                            if (category.EasyQuestionCount >= 10)
+                                                                            {
+                                                                                <option value="Easy">Easy</option>
+                                                                            }
+                                                                            if (category.MediumQuestionCount >= 10)
+                                                                            {
+                                                                                <option value="Medium">Medium</option>
+                                                                            }
+                                                                            if (category.HardQuestionCount >= 10)
+                                                                            {
+                                                                                <option value="Hard">Hard</option>
+                                                                            }
+                                                                        }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
                                                                     <input class="visually-hidden" value="@category.Id" name="category" />
@@ -115,27 +136,6 @@
                                                                             if (category.HardQuestionCount >= 50)
                                                                             {
                                                                                 <option>50</option>
-                                                                            }
-                                                                        }
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label for="difficulty_@category.Id">Difficulty</label>
-                                                                    <select class="form-control shadow-none mt-2" name="difficulty" id="difficulty_@category.Id" onchange="categoryQuestionCountControl(this)" onload="categoryQuestionCountControl(this)">
-                                                                        @{
-                                                                            if (category.EasyQuestionCount >= 10)
-                                                                            {
-                                                                                <option value="Easy">Easy</option>
-                                                                            }
-                                                                            if (category.MediumQuestionCount >= 10)
-                                                                            {
-                                                                                <option value="Medium">Medium</option>
-                                                                            }
-                                                                            if (category.HardQuestionCount >= 10)
-                                                                            {
-                                                                                <option value="Hard">Hard</option>
                                                                             }
                                                                         }
                                                                     </select>

@@ -8,8 +8,6 @@ namespace TriviaNight.Interfaces
 
         public void SaveQuestions(QuestionsList questions);
 
-        public void InitializeScore();
-
         public void SaveScore();
 
         public void SaveAnswer(int id);
