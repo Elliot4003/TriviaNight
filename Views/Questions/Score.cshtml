@@ -1,10 +1,4 @@
-﻿@*
-   Si le score est mauvais, recherche de GIF avec des mots clés comme "disappointed", "sad", etc
-   Si le score est moyen, recherche de GIF avec des mots clé comme "encourage", "keep it up", etc
-   Si le score est bon, recherche de GIF avec des mots clé comme "bravo", "champion", etc
-   Si le score est parfait, recherche de GIF avec des mots clé comme "amazing", "incredible", etc
-*@
-
+﻿
 @{
     ViewData["Title"] = "Score";
 }
@@ -12,36 +6,44 @@
 @model ScoreModel
 
 <style>
-    html, body {
-        margin: 0;
-        height: 100%;
-        overflow: hidden
+
+    .loader {
+        border: 14px solid #f3f3f3;
+        border-top: 14px solid #23272b;
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        animation: spin 2s linear infinite;
+    }
+
+    @@keyframes spin {
+        0%{
+        transform: rotate(0deg);}
+        100% {
+            transform: rotate(360deg);}
     }
 </style>
 <div class="container">
-    <div class="row d-flex justify-content-center align-items-center text-center" style="height:20vh">
-        <div>
-            <h1>Score</h1>
-        </div>
+    <div class="d-flex justify-content-center align-items-center" style="height:20vh">
+        <h1>Score</h1>
     </div>
-    <div class="row d-flex justify-content-center align-items-center text-center">
-        <div class="col col-lg-auto">
-            <div class="mb-0 pb-0" style="font-size:4.5vw">
+    <div class="row justify-content-center">
+        <div class="col-auto d-flex flex-column align-items-center px-5">
+            <div class="mb-0 pb-0" style="font-size:80px">
                 @Model.Score
             </div>
-            <hr style="height:5px;" />
-            <div class="mb-0 pb-0" style="font-size:4.5vw">
+            <hr style="height:5px;width:100%;" />
+            <div class="mb-0 pb-0" style="font-size:80px">
                 @Model.QuestionCount
             </div>
         </div>
-        <div class="col col-lg-auto p-5">
-            <img id="gif" />
+        <div id="loaderDiv" class="col-auto d-flex flex-column justify-content-center">
+            <div id="loader" class="loader"></div>
         </div>
+        <img id="gif" src="~/images/blank.png" alt="gif" class="col-auto d-flex flex-column align-items-center" />
     </div>
-    <div class="row d-flex justify-content-center align-items-center text-center pt-5">
-        <div>
-            <button class="btn btn-outline-dark btn-lg shadow-none" onclick="window.location.href='Categories';">Back to categories</button>
-        </div>
+    <div class="d-flex justify-content-center align-items-center" style="height:25vh">
+        <button class="btn btn-outline-dark btn-lg shadow-none" onclick="window.location.href='Categories';">Back to categories</button>
     </div>
     <input id="scoreResult" value="@Model.ScoreResult" class="d-none" />
 </div>
@@ -98,6 +100,8 @@
         const apiKey = '8YXNVSEDUgBDuvgGhdM02qzPUFVOYyjs';
         const apiUrl = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${searchTerm}&limit=30`;
         const img = document.getElementById("gif");
+        const loader = document.getElementById("loader");
+        const loaderDiv = document.getElementById("loaderDiv");
         const localStorageKey = 'savedGif';
         const savedGif = JSON.parse(localStorage.getItem(localStorageKey));
 
@@ -122,5 +126,15 @@
             });
         }
 
+        img.onload = () => {
+            loader.style.display = "none";
+            loaderDiv.style.display = "none";
+        }
+
+        img.onerror = () => {
+            loader.style.display = "none";
+            loaderDiv.style.display = "none";
+        }
+        
     </script>
 }

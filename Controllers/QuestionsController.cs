@@ -29,32 +29,38 @@ namespace TriviaNight.Controllers
             };
 
             QuestionsList questions = _api.QuestionRequest(questionRequest); // Récupération via l'API
-            _db.SaveQuestions(questions);
+            _db.SaveQuestions(questions); // Enregistrement dans le contexte
 
-            return RedirectToAction("Question", new { id = 1 });
+            return RedirectToAction("Question");
         }
 
-        public IActionResult Question(int id) 
+        public IActionResult Question() 
         {
             QuestionsList questions = _db.GetQuestions();
-            if (id <= _db.GetQuestionCount() && questions.Questions != null)
+            int questionCount = _db.GetQuestionCount();
+
+            if (questions.Questions != null && questionCount != 0)
             {
-                if (id == 1) _db.InitializeScore();
                 ViewBag.Score = _db.GetScore().Score;
-                ViewBag.QuestionCount = _db.GetQuestionCount();
-                QuestionModel question = questions.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).FirstOrDefault() ?? new(); // Première question non répondue
+                ViewBag.QuestionCount = questionCount;
+
+                // Récupération de la première question sans réponse afin de faciliter la navigation
+                QuestionModel question = questions.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).FirstOrDefault() ?? new();
                 ViewBag.Id = question.Id;
 
-                return View(question);
-            }
+                if (question.Id == 0) return RedirectToAction("Score"); // Dernière question
 
-            return RedirectToAction("Score");
+                return View(question);
+            } 
+
+            return RedirectToAction("Categories", "Categories");
         }
 
         [HttpPost]
         public IActionResult SaveAnswerAndScore([FromBody] string data)
         {
-            if (data.Contains("_correct")) _db.SaveScore();
+            // On reçoit la donnée sous la forme <id>_correct ou <id>_incorrect pour récupérer l'id et connaitre le résultat
+            if (data.Contains("_correct")) _db.SaveScore(); 
 
             int id = Int32.Parse(data.Split("_")[0]);
             _db.SaveAnswer(id);
@@ -63,32 +69,43 @@ namespace TriviaNight.Controllers
 
         public IActionResult Score()
         {
-            ScoreModel score = _db.GetScore() ?? new();
-            int questionCount = _db.GetQuestionCount();
+            QuestionsList questions = _db.GetQuestions();
+            ScoreModel scoreObj = _db.GetScore() ?? new();
 
-            int perf = score.Score > 0 ? score.Score / questionCount * 10 : 0; // Calcul de la performance
+            scoreObj.QuestionCount = _db.GetQuestionCount();
 
+            // Vérifier qu'une réponse a été apportée à chaque question, sinon on redirige vers la première question sans réponse
+            if (questions.Questions != null)
+            {
+                int questionsLeft = questions.Questions.Where(x => !x.Answered).Count();
+                if (questionsLeft != 0 || scoreObj.QuestionCount == 0) return RedirectToAction("Question"); // a modifier : si dernière question -> id à 0 -> redirection infinie
+            }
+            
+            float score = scoreObj.Score;
+            float questionCount = _db.GetQuestionCount();
+
+            float perf = score > 0 ? score / questionCount * 10 : 0; // Calcul de la performance
+
+            // La performance permet de récupérer un GIF adapté au score
             switch (perf)
             {
                 case var _ when perf <= 3:
-                    score.ScoreResult = ScoreResultEnum.Bad;
+                    scoreObj.ScoreResult = ScoreResultEnum.Bad;
                     break;
                 case var _ when (perf > 3 && perf <= 6):
-                    score.ScoreResult = ScoreResultEnum.Medium;
+                    scoreObj.ScoreResult = ScoreResultEnum.Medium;
                     break;
                 case var _ when (perf > 6 && perf <= 9):
-                    score.ScoreResult = ScoreResultEnum.Good;
+                    scoreObj.ScoreResult = ScoreResultEnum.Good;
                     break;
                 case var _ when perf == 10:
-                    score.ScoreResult = ScoreResultEnum.Perfect;
+                    scoreObj.ScoreResult = ScoreResultEnum.Perfect;
                     break;
                 default:
                     break;
             }
 
-            score.QuestionCount = _db.GetQuestionCount();
-
-            return View(score);
+            return View(scoreObj);
         }
 
         public IActionResult Categories()

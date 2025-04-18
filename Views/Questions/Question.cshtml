@@ -38,7 +38,8 @@
     <div class="container">
         <div class="row">
             <p>
-                <strong>@Model.Category</strong> - @difficulty</p>
+                <strong>@WebUtility.HtmlDecode(Model.Category)</strong> - @difficulty
+            </p>
         </div>
         <div class="row">
             <p><strong>Score :</strong> @ViewBag.Score/@ViewBag.QuestionCount</p>
@@ -117,7 +118,6 @@
 
             const correctAnswer = document.getElementById("correctAnswer").value;
             const questionId = document.getElementById("questionId").value;
-            let nextId = parseInt(questionId, 10) + 1;
 
             document.querySelectorAll(".btn").forEach(btn => {
                 btn.disabled = true;
@@ -129,13 +129,13 @@
                 button.className = "btn btn-success btn-lg shadow-none";
                 await sleep(2000);
                 await saveAnswerAndScore(true);
-                window.location.href = String(nextId);
+                window.location.href = "Question";
             } else {
                 document.querySelector('button[value="' + correctAnswer + '"]').className = "btn btn-success btn-lg shadow-none";
                 button.className = "btn btn-danger btn-lg shadow-none";
                 await sleep(3000);
                 await saveAnswerAndScore(false);
-                window.location.href = String(nextId);
+                window.location.href = "Question";
             }
         }
 

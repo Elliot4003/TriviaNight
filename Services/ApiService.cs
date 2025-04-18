@@ -17,6 +17,11 @@ namespace TriviaNight.Services
             Client = new HttpClient { BaseAddress = BaseAddress };
         }
 
+        /// <summary>
+        /// Récupère les questions via l'API OTDB en fonction de la requête émise par l'utilisateur
+        /// </summary>
+        /// <param name="questionRequest">Contient la catégorie, le nombre de questions et la difficulté</param>
+        /// <returns>Les questions</returns>
         [HttpGet]
         public QuestionsList QuestionRequest(QuestionRequestModel questionRequest)
         {
@@ -35,6 +40,10 @@ namespace TriviaNight.Services
             return questions;
         }
 
+        /// <summary>
+        /// Récupère toutes les catégories via l'API OTDB
+        /// </summary>
+        /// <returns>Les catégories</returns>
         [HttpGet]
         public CategoriesList CategoryRequest()
         {
@@ -66,6 +75,10 @@ namespace TriviaNight.Services
             return(categories);
         }
 
+        /// <summary>
+        /// Récupère le nombre total de questions disponibles sur OTDB
+        /// </summary>
+        /// <returns>Le nombre de questions</returns>
         [HttpGet]
         private QuestionCountResponse QuestionCount()
         {
@@ -82,6 +95,11 @@ namespace TriviaNight.Services
             return questionCount;
         }
 
+        /// <summary>
+        /// Récupère le nombre de questions d'une catégorie via l'API OTDB
+        /// </summary>
+        /// <param name="id">Id de la catégorie</param>
+        /// <returns>Le nombre de questions d'une catégorie</returns>
         [HttpGet]
         private CategoryQuestionCountResponse CategoryQuestionCount(int id)
         {
