@@ -25,9 +25,9 @@ namespace TriviaNight.Services
         [HttpGet]
         public QuestionsList QuestionRequest(QuestionRequestModel questionRequest)
         {
-            QuestionsList questions = new QuestionsList();
+            var questions = new QuestionsList();
             string request = "api.php?category=" + questionRequest.Category.ToString() + "&amount=" + questionRequest.Amount.ToString() + "&difficulty=" + questionRequest.Difficulty.ToLower();
-            HttpResponseMessage response = this.Client.GetAsync(request).Result;
+            HttpResponseMessage response = Client.GetAsync(request).Result;
 
             if (response.IsSuccessStatusCode)
             {
@@ -47,19 +47,19 @@ namespace TriviaNight.Services
         [HttpGet]
         public CategoriesList CategoryRequest()
         {
-            CategoriesList categories = new();
-            HttpResponseMessage response = this.Client.GetAsync("api_category.php").Result;
-            CategoryQuestionCountResponse categoryQuestionCount = new();
+            var categories = new CategoriesList();
+            HttpResponseMessage response = Client.GetAsync("api_category.php").Result;
+            var categoryQuestionCount = new CategoryQuestionCountResponse();
 
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 var result = JsonSerializer.Deserialize<CategoriesList>(data);
-                categories = result ?? new();
+                categories = result ?? new CategoriesList();
 
                 if (categories.Categories != null) 
                 {
-                    foreach (CategoryModel category in categories.Categories)
+                    foreach (var category in categories.Categories)
                     {
                         categoryQuestionCount = CategoryQuestionCount(category.Id);
                         if (categoryQuestionCount.CategoryQuestionCount != null) 
@@ -82,14 +82,14 @@ namespace TriviaNight.Services
         [HttpGet]
         private QuestionCountResponse QuestionCount()
         {
-            QuestionCountResponse questionCount = new();
+            var questionCount = new QuestionCountResponse();
             HttpResponseMessage response = this.Client.GetAsync("api_count_global.php").Result;
 
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 var result = JsonSerializer.Deserialize<QuestionCountResponse>(data);
-                questionCount = result ?? new();
+                questionCount = result ?? new QuestionCountResponse();
             }
 
             return questionCount;
@@ -103,14 +103,14 @@ namespace TriviaNight.Services
         [HttpGet]
         private CategoryQuestionCountResponse CategoryQuestionCount(int id)
         {
-            CategoryQuestionCountResponse categoryQuestionCount = new();
+            var categoryQuestionCount = new CategoryQuestionCountResponse();
             HttpResponseMessage response = this.Client.GetAsync("api_count.php?category=" + id).Result;
 
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 var result = JsonSerializer.Deserialize<CategoryQuestionCountResponse>(data);
-                categoryQuestionCount = result ?? new();
+                categoryQuestionCount = result ?? new CategoryQuestionCountResponse();
             }
 
             return categoryQuestionCount;

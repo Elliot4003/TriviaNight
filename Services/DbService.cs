@@ -23,7 +23,7 @@ namespace TriviaNight.Services
             if (categories.Categories != null) 
             {
                 // Insertion des questions dans la mémoire
-                foreach (CategoryModel category in categories.Categories)
+                foreach (var category in categories.Categories)
                 {
                     _context.Categories.Add(category);
                 }
@@ -42,7 +42,7 @@ namespace TriviaNight.Services
             {
                 int i = 1;
                 // Insertion des questions dans la mémoire
-                foreach (QuestionModel question in questions.Questions)
+                foreach (var question in questions.Questions)
                 {
                     question.Id = i++;
                     _context.Questions.Add(question);
@@ -57,7 +57,7 @@ namespace TriviaNight.Services
         /// </summary>
         public void SaveScore()
         {
-            ScoreModel score = _context.Score.Find(1) ?? new();
+            var score = _context.Score.Find(1) ?? new ScoreModel();
             if (score != null) 
             {
                 _context.Score.Attach(score);
@@ -72,7 +72,7 @@ namespace TriviaNight.Services
         /// <param name="id"></param>
         public void SaveAnswer(int id)
         {
-            QuestionModel question = _context.Questions.Find(id) ?? new();
+            var question = _context.Questions.Find(id) ?? new QuestionModel();
             if (question != null)
             {
                 question.Answered = true;
@@ -103,7 +103,7 @@ namespace TriviaNight.Services
         /// </summary>
         private void InitializeScore()
         {
-            ScoreModel score = new ScoreModel()
+            var score = new ScoreModel()
             {
                 Id = 1,
                 Score = 0
@@ -119,8 +119,13 @@ namespace TriviaNight.Services
         public ScoreModel GetScore()
         {
             if (_context.Score.Find(1) == null) InitializeScore();
-            ScoreModel score = _context.Score.Find(1) ?? new();
+            var score = _context.Score.Find(1) ?? new();
             return score;
+        }
+
+        public QuestionModel GetFirtQuestionNotAnswered()
+        {
+            return _context.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).FirstOrDefault() ?? new QuestionModel();
         }
 
         /// <summary>
@@ -138,9 +143,9 @@ namespace TriviaNight.Services
         /// <returns>Les catégories</returns>
         public CategoriesList GetCategories()
         {
-            CategoriesList categories = new();
+            var categories = new CategoriesList();
             categories.Categories = []; // Initialisation
-            foreach (CategoryModel category in _context.Categories)
+            foreach (var category in _context.Categories)
             {
                 categories.Categories.Add(category);
             }
@@ -162,9 +167,9 @@ namespace TriviaNight.Services
         /// <returns>Les questions</returns>
         public QuestionsList GetQuestions() 
         {
-            QuestionsList questions = new();
+            var questions = new QuestionsList();
             questions.Questions = [];
-            foreach (QuestionModel question in _context.Questions)
+            foreach (var question in _context.Questions)
             {
                 questions.Questions.Add(question);
             }

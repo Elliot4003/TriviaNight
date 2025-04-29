@@ -24,7 +24,7 @@ namespace TriviaNight.Controllers
             _db.DeleteQuestions(); // Suppression des potentielles questions
             _db.DeleteScore(); // Suppression du potentiel score
 
-            CategoriesList categories = new();
+            var categories = new CategoriesList();
             if (_db.GetCategoryCount() == 0) 
             {
                 categories = _api.CategoryRequest(); // Première récupération des catégories

@@ -18,6 +18,8 @@ namespace TriviaNight.Interfaces
 
         public ScoreModel GetScore();
 
+        public QuestionModel GetFirtQuestionNotAnswered();
+
         public int GetCategoryCount();
 
         public CategoriesList GetCategories();

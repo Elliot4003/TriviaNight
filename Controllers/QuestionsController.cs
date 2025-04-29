@@ -11,12 +11,14 @@ namespace TriviaNight.Controllers
         private readonly ILogger<CategoriesController> _logger;
         private readonly IApi _api;
         private readonly IDb _db;
+        private readonly QuestionsList _questions;
 
         public QuestionsController(ILogger<CategoriesController> logger, IApi api, IDb db)
         {
             _logger = logger;
             _api = api;
             _db = db;
+            _questions = _db.GetQuestions();
         }
 
         public IActionResult Questions(int category, int amount, string difficulty)
@@ -28,7 +30,7 @@ namespace TriviaNight.Controllers
                 Difficulty = difficulty
             };
 
-            QuestionsList questions = _api.QuestionRequest(questionRequest); // Récupération via l'API
+            var questions = _api.QuestionRequest(questionRequest); // Récupération via l'API
             _db.SaveQuestions(questions); // Enregistrement dans le contexte
 
             return RedirectToAction("Question");
@@ -36,22 +38,21 @@ namespace TriviaNight.Controllers
 
         public IActionResult Question() 
         {
-            QuestionsList questions = _db.GetQuestions();
             int questionCount = _db.GetQuestionCount();
 
-            if (questions.Questions != null && questionCount != 0)
+            if (_questions.Questions != null && questionCount != 0)
             {
                 ViewBag.Score = _db.GetScore().Score;
                 ViewBag.QuestionCount = questionCount;
 
                 // Récupération de la première question sans réponse afin de faciliter la navigation
-                QuestionModel question = questions.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).FirstOrDefault() ?? new();
+                var question = _questions.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).FirstOrDefault() ?? new();
                 ViewBag.Id = question.Id;
 
                 if (question.Id == 0) return RedirectToAction("Score"); // Dernière question
 
                 return View(question);
-            } 
+            }
 
             return RedirectToAction("Categories", "Categories");
         }
@@ -69,15 +70,14 @@ namespace TriviaNight.Controllers
 
         public IActionResult Score()
         {
-            QuestionsList questions = _db.GetQuestions();
-            ScoreModel scoreObj = _db.GetScore() ?? new();
+            var scoreObj = _db.GetScore() ?? new ScoreModel();
 
             scoreObj.QuestionCount = _db.GetQuestionCount();
 
             // Vérifier qu'une réponse a été apportée à chaque question, sinon on redirige vers la première question sans réponse
-            if (questions.Questions != null)
+            if (_questions.Questions != null)
             {
-                int questionsLeft = questions.Questions.Where(x => !x.Answered).Count();
+                int questionsLeft = _questions.Questions.Where(x => !x.Answered).Count();
                 if (questionsLeft != 0 || scoreObj.QuestionCount == 0) return RedirectToAction("Question"); // a modifier : si dernière question -> id à 0 -> redirection infinie
             }
             
