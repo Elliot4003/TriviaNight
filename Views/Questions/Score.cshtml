@@ -123,15 +123,10 @@
             });
         }
 
-        img.onload = () => {
+        img.addEventListener("load", () => {
             loader.style.display = "none";
             loaderDiv.style.display = "none";
-        }
-
-        img.onerror = () => {
-            loader.style.display = "none";
-            loaderDiv.style.display = "none";
-        }
+        });
         
     </script>
 }
