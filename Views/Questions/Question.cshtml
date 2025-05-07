@@ -34,7 +34,7 @@
         overflow: hidden
     }
 </style>
-<div class="position-absolute start-0 p-2">
+<div class="position-absolute start-0 p-2 m-4">
     <div class="container">
         <div class="row">
             <p>
@@ -44,12 +44,10 @@
         <div class="row">
             <p><strong>Score :</strong> @ViewBag.Score/@ViewBag.QuestionCount</p>
         </div>
-    </div>
-</div>
-<div class="position-absolute end-0 p-2">
-    <div class="container">
         <div class="row">
-            <p>Question n°@ViewBag.Id</p>
+            <div style="border:solid 2px;border-radius: 15px;width:80%;text-align:center">
+                <p class="m-4">Question n°@ViewBag.Id</p>
+            </div>
         </div>
     </div>
 </div>

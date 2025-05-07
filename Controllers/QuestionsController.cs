@@ -78,7 +78,7 @@ namespace TriviaNight.Controllers
             if (_questions.Questions != null)
             {
                 int questionsLeft = _questions.Questions.Where(x => !x.Answered).Count();
-                if (questionsLeft != 0 || scoreObj.QuestionCount == 0) return RedirectToAction("Question"); // a modifier : si dernière question -> id à 0 -> redirection infinie
+                if (questionsLeft != 0 || scoreObj.QuestionCount == 0) return RedirectToAction("Question");
             }
             
             float score = scoreObj.Score;
