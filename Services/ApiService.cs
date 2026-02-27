@@ -22,7 +22,7 @@ namespace TriviaNight.Services
         /// </summary>
         /// <param name="questionRequest">Contient la catégorie, le nombre de questions et la difficulté</param>
         /// <returns>Les questions</returns>
-        [HttpGet]
+        [HttpPost]
         public QuestionsList QuestionRequest(QuestionRequestModel questionRequest)
         {
             var questions = new QuestionsList();
@@ -100,7 +100,7 @@ namespace TriviaNight.Services
         /// </summary>
         /// <param name="id">Id de la catégorie</param>
         /// <returns>Le nombre de questions d'une catégorie</returns>
-        [HttpGet]
+        [HttpPost]
         private CategoryQuestionCountResponse CategoryQuestionCount(int id)
         {
             var categoryQuestionCount = new CategoryQuestionCountResponse();
