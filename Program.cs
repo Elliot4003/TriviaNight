@@ -1,12 +1,17 @@
+using TriviaNight.Helpers;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
 using TriviaNight.Services;
+using Microsoft.EntityFrameworkCore;
+using TriviaNight.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IApiService, ApiService>();
+builder.Services.AddTransient<IApiRepository, ApiRepository>();
+builder.Services.AddSingleton<IPasswordHelper, PasswordHelper>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromSeconds(3600);
@@ -14,7 +19,9 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddDbContext<TriviaNightDbContext>(ServiceLifetime.Scoped);
+builder.Services.AddDbContext<TriviaNightDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TriviaNightDB"))
+);
 
 var app = builder.Build();
 

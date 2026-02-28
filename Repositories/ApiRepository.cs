@@ -5,12 +5,12 @@ using System.Text.Json;
 
 namespace TriviaNight.Services;
 
-public class ApiService : IApiService
+public class ApiRepository : IApiRepository
 {
     public Uri BaseAddress { get; } = new Uri("https://opentdb.com/");
     public HttpClient Client { get; }
     
-    public ApiService()
+    public ApiRepository()
     {
         Client = new HttpClient { BaseAddress = BaseAddress };
     }

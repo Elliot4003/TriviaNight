@@ -10,11 +10,11 @@ namespace TriviaNight.Controllers;
 public class QuestionsController : Controller
 {
     private readonly ILogger<CategoriesController> _logger;
-    private readonly IApiService _apiService;
+    private readonly IApiRepository _apiService;
 
     public QuestionsController(
         ILogger<CategoriesController> logger, 
-        IApiService apiService
+        IApiRepository apiService
         )
     {
         _logger = logger;

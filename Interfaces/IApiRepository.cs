@@ -2,7 +2,7 @@
 
 namespace TriviaNight.Interfaces;
 
-public interface IApiService
+public interface IApiRepository
 {
     Uri BaseAddress { get; }
 
