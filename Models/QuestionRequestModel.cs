@@ -1,17 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace TriviaNight.Models
+namespace TriviaNight.Models;
+
+public class QuestionRequestModel
 {
-    public class QuestionRequestModel
-    {
-        [JsonPropertyName("amount")]
-        public int Amount { get; set; }
+    [JsonPropertyName("amount")]
+    public int Amount { get; set; }
 
-        [JsonPropertyName("category")]
-        public int Category { get; set; }
+    [JsonPropertyName("category")]
+    public int Category { get; set; }
 
-        [JsonPropertyName("difficulty")]
-        public required string Difficulty { get; set; }
-    }
+    [JsonPropertyName("difficulty")]
+    public required string Difficulty { get; set; }
 }

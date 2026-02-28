@@ -1,4 +1,5 @@
 ﻿@using System.Net
+@using TriviaNight.Extensions;
 
 @{
     ViewData["Title"] = "Questions";
@@ -8,23 +9,21 @@
 
 @{
     List<string> answers = Model.IncorrectAnswers ?? [];
-    string difficulty = "";
+    var difficulty = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Difficulty.ToLower());
+    var score = Context.Session.Get<ScoreModel>("Score")?.Score;
+    var questionCount = Context.Session.Get<QuestionsList>("Questions")?.Questions.Count;
 
     // Randomisation de l'ordre
     Random rand = new Random();
-    if (Model.CorrectAnswer != null)
-    {
-        if (Model.Type == "multiple") answers.Insert(rand.Next(4), Model.CorrectAnswer);
-        else {
-            if(Model.CorrectAnswer == "True")
-            {
-                answers.Insert(0, Model.CorrectAnswer);
-            } else {
-                answers.Insert(1, Model.CorrectAnswer);
-            }
+    if (Model.Type == "multiple") answers.Insert(rand.Next(4), Model.CorrectAnswer);
+    else {
+        if(Model.CorrectAnswer == "True")
+        {
+            answers.Insert(0, Model.CorrectAnswer);
+        } else {
+            answers.Insert(1, Model.CorrectAnswer);
         }
-    }
-    if (Model.Difficulty != null) difficulty = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Difficulty.ToLower());
+    }    
 }
 
 <style>
@@ -34,7 +33,7 @@
         overflow: hidden
     }
 </style>
-<div class="position-absolute start-0 p-2">
+<div class="position-absolute start-0 p-2 m-4">
     <div class="container">
         <div class="row">
             <p>
@@ -42,14 +41,12 @@
             </p>
         </div>
         <div class="row">
-            <p><strong>Score :</strong> @ViewBag.Score/@ViewBag.QuestionCount</p>
+            <p><strong>Score :</strong> @score/@questionCount</p>
         </div>
-    </div>
-</div>
-<div class="position-absolute end-0 p-2">
-    <div class="container">
         <div class="row">
-            <p>Question n°@ViewBag.Id</p>
+            <div style="border:solid 2px;border-radius: 15px;width:80%;text-align:center">
+                <p class="m-4">Question n°@ViewBag.Id</p>
+            </div>
         </div>
     </div>
 </div>

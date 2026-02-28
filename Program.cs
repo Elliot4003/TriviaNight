@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
 using TriviaNight.Services;
@@ -8,11 +6,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<IApi, ApiService>();
-builder.Services.AddScoped<IDb, DbService>();
-builder.Services.AddDbContext<TriviaNightDbContext>(options => 
-    options.UseInMemoryDatabase("TriviaNightDb")
-);
+builder.Services.AddTransient<IApiService, ApiService>();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(3600);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddDbContext<TriviaNightDbContext>(ServiceLifetime.Scoped);
 
 var app = builder.Build();
 
@@ -30,6 +32,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

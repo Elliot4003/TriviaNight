@@ -53,28 +53,25 @@
         const badResultWordsList = [
             "disappointment",
             "failure",
-            "bummer",
-            "downer"
+            "sad"
         ];
 
         const mediumResultWordsList = [
-            "encourage",
-            "motivate",
+            "you got this",
+            "you can do it",
             "keep it up"
         ];
 
         const goodResultWordsList = [
             "bravo",
-            "champion",
             "well done",
-            "Good job"
+            "good job"
         ];
 
         const perfectResultWordsList = [
-            "genius",
             "amazing",
-            "incredible",
-            "mastermind"
+            "congrats",
+            "champion"
         ];
 
         let searchTerm = "";
@@ -126,15 +123,10 @@
             });
         }
 
-        img.onload = () => {
+        img.addEventListener("load", () => {
             loader.style.display = "none";
             loaderDiv.style.display = "none";
-        }
-
-        img.onerror = () => {
-            loader.style.display = "none";
-            loaderDiv.style.display = "none";
-        }
+        });
         
     </script>
 }

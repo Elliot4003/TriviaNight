@@ -1,52 +1,67 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using TriviaNight.Extensions;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
 
-namespace TriviaNight.Controllers
+namespace TriviaNight.Controllers;
+
+public class CategoriesController : Controller
 {
-    public class CategoriesController : Controller
+    private readonly ILogger<CategoriesController> _logger;
+    private readonly IApiService _apiService;
+
+    public CategoriesController(
+        ILogger<CategoriesController> logger, 
+        IApiService apiService
+        )
     {
-        private readonly ILogger<CategoriesController> _logger;
-        private readonly IApi _api;
-        private readonly IDb _db;
+        _logger = logger;
+        _apiService = apiService;
+    }
 
-        public CategoriesController(ILogger<CategoriesController> logger, IApi api, IDb db)
+    [HttpGet]
+    public async Task<IActionResult> Categories()
+    {
+        CleanSession();
+
+        // Initilisation
+        if (!HttpContext.Session.Keys.Contains("Categories"))
         {
-            _logger = logger;
-            _api = api;
-            _db = db;
+            var categoryRequestResult = await _apiService.CategoryRequestAsync();
+            HttpContext.Session.Set("Categories", categoryRequestResult);
         }
 
-        [HttpGet]
-        public IActionResult Categories()
-        {
-            _db.DeleteQuestions(); // Suppression des potentielles questions
-            _db.DeleteScore(); // Suppression du potentiel score
+        var categories = GetSessionCategories();
 
-            CategoriesList categories = new();
-            if (_db.GetCategoryCount() == 0) 
-            {
-                categories = _api.CategoryRequest(); // Première récupération des catégories
-                _db.SaveCategories(categories);
-            } 
-            else
-            {
-                categories = _db.GetCategories(); // Récupération en mémoire
-            }
+        return View(categories);
+    }
 
-            return View(categories);
-        }
+    private void CleanSession()
+    {
+        // Nettoyage de la session
+        HttpContext.Session.Remove("Questions");
+        HttpContext.Session.Remove("Score");
+    }
 
-        public IActionResult Contribute()
-        {
-            return View();
-        }
+    private CategoriesList GetSessionCategories()
+    {
+        var categories = HttpContext.Session.Get<CategoriesList>("Categories");
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        if (categories is null || categories.Categories is null || categories.Categories.Count == 0)
+            throw new Exception("Aucune catégorie trouvée pour cette session.");
+
+        return categories;
+    }
+
+    public IActionResult Contribute()
+    {
+        return View();
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
