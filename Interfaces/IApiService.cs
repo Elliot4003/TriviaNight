@@ -3,7 +3,7 @@ using TriviaNight.Models;
 
 namespace TriviaNight.Interfaces
 {
-    public interface IApi
+    public interface IApiService
     {
         Uri BaseAddress { get; }
 

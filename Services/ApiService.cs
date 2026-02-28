@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
 using System.Text.Json;
-using System.Security.AccessControl;
 
 namespace TriviaNight.Services
 {
-    public class ApiService : IApi
+    public class ApiService : IApiService
     {
         public Uri BaseAddress { get; } = new Uri("https://opentdb.com/");
         public HttpClient Client { get; }
