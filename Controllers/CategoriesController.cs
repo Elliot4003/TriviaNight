@@ -8,31 +8,40 @@ namespace TriviaNight.Controllers
     public class CategoriesController : Controller
     {
         private readonly ILogger<CategoriesController> _logger;
-        private readonly IApi _api;
-        private readonly IDb _db;
+        private readonly IApiService _apiService;
+        private readonly IQuestionsService _questionsService;
+        private readonly ICategoriesService _categoriesService;
+        private readonly IScoreService _scoreService;
 
-        public CategoriesController(ILogger<CategoriesController> logger, IApi api, IDb db)
+        public CategoriesController(
+            ILogger<CategoriesController> logger, 
+            IApiService apiService, 
+            IQuestionsService questionsService, 
+            ICategoriesService categoriesService, 
+            IScoreService scoreService)
         {
             _logger = logger;
-            _api = api;
-            _db = db;
+            _apiService = apiService;
+            _questionsService = questionsService;
+            _categoriesService = categoriesService;
+            _scoreService = scoreService;
         }
 
         [HttpGet]
         public IActionResult Categories()
         {
-            _db.DeleteQuestions(); // Suppression des potentielles questions
-            _db.DeleteScore(); // Suppression du potentiel score
+            _questionsService.DeleteQuestions(); // Suppression des potentielles questions
+            _scoreService.DeleteScore(); // Suppression du potentiel score
 
             var categories = new CategoriesList();
-            if (_db.GetCategoryCount() == 0) 
+            if (_categoriesService.GetCategoryCount() == 0) 
             {
-                categories = _api.CategoryRequest(); // Première récupération des catégories
-                _db.SaveCategories(categories);
+                categories = _apiService.CategoryRequest(); // Première récupération des catégories
+                _categoriesService.SaveCategories(categories);
             } 
             else
             {
-                categories = _db.GetCategories(); // Récupération en mémoire
+                categories = _categoriesService.GetCategories(); // Récupération en mémoire
             }
 
             return View(categories);

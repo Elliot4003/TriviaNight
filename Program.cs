@@ -8,8 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<IApi, ApiService>();
-builder.Services.AddScoped<IDb, DbService>();
+builder.Services.AddTransient<IApiService, ApiService>();
+builder.Services.AddScoped<IQuestionsService, QuestionsService>();
+builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+builder.Services.AddScoped<IScoreService, ScoreService>();
 builder.Services.AddDbContext<TriviaNightDbContext>(options => 
     options.UseInMemoryDatabase("TriviaNightDb")
 );

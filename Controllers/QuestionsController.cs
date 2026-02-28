@@ -9,16 +9,25 @@ namespace TriviaNight.Controllers
     public class QuestionsController : Controller
     {
         private readonly ILogger<CategoriesController> _logger;
-        private readonly IApi _api;
-        private readonly IDb _db;
-        private readonly QuestionsList _questions;
+        private readonly IApiService _apiService;
+        private readonly IQuestionsService _questionsService;
+        private readonly ICategoriesService _categoriesService;
+        private readonly IScoreService _scoreService;
+        private QuestionsList _questions = new();
 
-        public QuestionsController(ILogger<CategoriesController> logger, IApi api, IDb db)
+        public QuestionsController(
+            ILogger<CategoriesController> logger, 
+            IApiService apiService, 
+            IQuestionsService questionsService, 
+            ICategoriesService categoriesService, 
+            IScoreService scoreService
+            )
         {
             _logger = logger;
-            _api = api;
-            _db = db;
-            _questions = _db.GetQuestions();
+            _apiService = apiService;
+            _questionsService = questionsService;
+            _categoriesService = categoriesService;
+            _scoreService = scoreService;
         }
 
         public IActionResult Questions(int category, int amount, string difficulty)
@@ -30,19 +39,22 @@ namespace TriviaNight.Controllers
                 Difficulty = difficulty
             };
 
-            var questions = _api.QuestionRequest(questionRequest); // Récupération via l'API
-            _db.SaveQuestions(questions); // Enregistrement dans le contexte
+            var questions = _apiService.QuestionRequest(questionRequest); // Récupération via l'API
+            _questionsService.SaveQuestions(questions); // Enregistrement dans le contexte
 
             return RedirectToAction("Question");
         }
 
         public IActionResult Question() 
         {
-            int questionCount = _db.GetQuestionCount();
+            if (_questions.Questions == null)
+                _questions = _questionsService.GetQuestions();
+
+            int questionCount = _questionsService.GetQuestionCount();
 
             if (_questions.Questions != null && questionCount != 0)
             {
-                ViewBag.Score = _db.GetScore().Score;
+                ViewBag.Score = _scoreService.GetScore().Score;
                 ViewBag.QuestionCount = questionCount;
 
                 // Récupération de la première question sans réponse afin de faciliter la navigation
@@ -61,18 +73,18 @@ namespace TriviaNight.Controllers
         public IActionResult SaveAnswerAndScore([FromBody] string data)
         {
             // On reçoit la donnée sous la forme <id>_correct ou <id>_incorrect pour récupérer l'id et connaitre le résultat
-            if (data.Contains("_correct")) _db.SaveScore(); 
+            if (data.Contains("_correct")) _scoreService.SaveScore(); 
 
             int id = Int32.Parse(data.Split("_")[0]);
-            _db.SaveAnswer(id);
+            _questionsService.SaveAnswer(id);
             return Ok();
         }
 
         public IActionResult Score()
         {
-            var scoreObj = _db.GetScore() ?? new ScoreModel();
+            var scoreObj = _scoreService.GetScore() ?? new ScoreModel();
 
-            scoreObj.QuestionCount = _db.GetQuestionCount();
+            scoreObj.QuestionCount = _questionsService.GetQuestionCount();
 
             // Vérifier qu'une réponse a été apportée à chaque question, sinon on redirige vers la première question sans réponse
             if (_questions.Questions != null)
@@ -82,7 +94,7 @@ namespace TriviaNight.Controllers
             }
             
             float score = scoreObj.Score;
-            float questionCount = _db.GetQuestionCount();
+            float questionCount = _questionsService.GetQuestionCount();
 
             float perf = score > 0 ? score / questionCount * 10 : 0; // Calcul de la performance
 
