@@ -21,20 +21,20 @@ namespace TriviaNight.Services
         /// <param name="questionRequest">Contient la catégorie, le nombre de questions et la difficulté</param>
         /// <returns>Les questions</returns>
         [HttpPost]
-        public QuestionsList QuestionRequest(QuestionRequestModel questionRequest)
+        public async Task<QuestionsList> QuestionRequestAsync(QuestionRequestModel questionRequest)
         {
-            var questions = new QuestionsList();
             string request = "api.php?category=" + questionRequest.Category.ToString() + "&amount=" + questionRequest.Amount.ToString() + "&difficulty=" + questionRequest.Difficulty.ToLower();
-            HttpResponseMessage response = Client.GetAsync(request).Result;
+            HttpResponseMessage response = await Client.GetAsync(request);
 
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                var result = JsonSerializer.Deserialize<QuestionsList>(data);
-                questions = result ?? new QuestionsList();
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
 
-                return questions;
-            }
+            var data = response.Content.ReadAsStream();
+            var questions = await JsonSerializer.DeserializeAsync<QuestionsList>(data);
+
+            if (questions is null)
+                throw new Exception("L'API n'a retourné aucun résultat");
+
             return questions;
         }
 
@@ -43,34 +43,29 @@ namespace TriviaNight.Services
         /// </summary>
         /// <returns>Les catégories</returns>
         [HttpGet]
-        public CategoriesList CategoryRequest()
+        public async Task<CategoriesList> CategoryRequestAsync()
         {
-            var categories = new CategoriesList();
-            HttpResponseMessage response = Client.GetAsync("api_category.php").Result;
-            var categoryQuestionCount = new CategoryQuestionCountResponse();
+            HttpResponseMessage response = await Client.GetAsync("api_category.php");
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+
+            var data = response.Content.ReadAsStream();
+            var categories = await JsonSerializer.DeserializeAsync<CategoriesList>(data);
+
+            if (categories is null)
+                throw new Exception("L'API n'a retourné aucun résultat");
+
+            foreach (var category in categories.Categories)
             {
-                string data = response.Content.ReadAsStringAsync().Result;
-                var result = JsonSerializer.Deserialize<CategoriesList>(data);
-                categories = result ?? new CategoriesList();
-
-                if (categories.Categories != null) 
-                {
-                    foreach (var category in categories.Categories)
-                    {
-                        categoryQuestionCount = CategoryQuestionCount(category.Id);
-                        if (categoryQuestionCount.CategoryQuestionCount != null) 
-                        {
-                            category.EasyQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalEasyQuestionCount;
-                            category.MediumQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalMediumQuestionCount;
-                            category.HardQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalHardQuestionCount;
-                        }
-                    }
-                }
+                var categoryQuestionCount = await CategoryQuestionCountRequestAsync(category.Id);
+                    
+                category.EasyQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalEasyQuestionCount;
+                category.MediumQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalMediumQuestionCount;
+                category.HardQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalHardQuestionCount;
             }
-
-            return(categories);
+            
+            return categories;
         }
 
         /// <summary>
@@ -78,17 +73,18 @@ namespace TriviaNight.Services
         /// </summary>
         /// <returns>Le nombre de questions</returns>
         [HttpGet]
-        private QuestionCountResponse QuestionCount()
+        private async Task<QuestionCountResponse> QuestionCountRequestAsync()
         {
-            var questionCount = new QuestionCountResponse();
-            HttpResponseMessage response = this.Client.GetAsync("api_count_global.php").Result;
+            HttpResponseMessage response = await Client.GetAsync("api_count_global.php");
 
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                var result = JsonSerializer.Deserialize<QuestionCountResponse>(data);
-                questionCount = result ?? new QuestionCountResponse();
-            }
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+
+            var data = response.Content.ReadAsStream();
+            var questionCount = await JsonSerializer.DeserializeAsync<QuestionCountResponse>(data);
+            
+            if (questionCount is null)
+                throw new Exception("L'API n'a retourné aucun résultat");
 
             return questionCount;
         }
@@ -99,17 +95,18 @@ namespace TriviaNight.Services
         /// <param name="id">Id de la catégorie</param>
         /// <returns>Le nombre de questions d'une catégorie</returns>
         [HttpPost]
-        private CategoryQuestionCountResponse CategoryQuestionCount(int id)
+        private async Task<CategoryQuestionCountResponse> CategoryQuestionCountRequestAsync(int id)
         {
-            var categoryQuestionCount = new CategoryQuestionCountResponse();
-            HttpResponseMessage response = this.Client.GetAsync("api_count.php?category=" + id).Result;
+            HttpResponseMessage response = await Client.GetAsync("api_count.php?category=" + id);
 
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                var result = JsonSerializer.Deserialize<CategoryQuestionCountResponse>(data);
-                categoryQuestionCount = result ?? new CategoryQuestionCountResponse();
-            }
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+
+            var data = response.Content.ReadAsStream();
+            var categoryQuestionCount = await JsonSerializer.DeserializeAsync<CategoryQuestionCountResponse>(data);
+            
+            if (categoryQuestionCount is null)
+                throw new Exception("L'API n'a retourné aucun résultat");
 
             return categoryQuestionCount;
         }

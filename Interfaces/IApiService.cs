@@ -9,8 +9,8 @@ namespace TriviaNight.Interfaces
 
         HttpClient Client { get; }
 
-        public QuestionsList QuestionRequest(QuestionRequestModel questionRequest);
+        public Task<QuestionsList> QuestionRequestAsync(QuestionRequestModel questionRequest);
 
-        public CategoriesList CategoryRequest();
+        public Task<CategoriesList> CategoryRequestAsync();
     }
 }

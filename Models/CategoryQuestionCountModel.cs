@@ -24,6 +24,6 @@ namespace TriviaNight.Models
         public int Id { get; set; }
 
         [JsonPropertyName("category_question_count")]
-        public CategoryQuestionCountModel? CategoryQuestionCount { get; set; }
+        public required CategoryQuestionCountModel CategoryQuestionCount { get; set; }
     }
 }

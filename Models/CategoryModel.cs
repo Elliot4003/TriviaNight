@@ -11,7 +11,7 @@ namespace TriviaNight.Models
         public int Id { get; set; }
 
         [JsonPropertyName("name")]
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         public int EasyQuestionCount { get; set; }
 
@@ -23,6 +23,6 @@ namespace TriviaNight.Models
     public class CategoriesList
     {
         [JsonPropertyName("trivia_categories")]
-        public List<CategoryModel>? Categories { get; set; }
+        public required List<CategoryModel> Categories { get; set; }
     }
 }

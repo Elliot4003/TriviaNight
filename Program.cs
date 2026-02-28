@@ -9,12 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IApiService, ApiService>();
-builder.Services.AddScoped<IQuestionsService, QuestionsService>();
-builder.Services.AddScoped<ICategoriesService, CategoriesService>();
-builder.Services.AddScoped<IScoreService, ScoreService>();
-builder.Services.AddDbContext<TriviaNightDbContext>(options => 
-    options.UseInMemoryDatabase("TriviaNightDb")
-);
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(10);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddDbContext<TriviaNightDbContext>(ServiceLifetime.Scoped);
 
 var app = builder.Build();
 
@@ -32,6 +34,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

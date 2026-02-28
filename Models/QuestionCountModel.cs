@@ -23,6 +23,6 @@ namespace TriviaNight.Models
         public QuestionCountModel? Overall { get; set; }
 
         [JsonPropertyName("categories")]
-        public Dictionary<string, QuestionCountModel>? QuestionCount { get; set; }
+        public required Dictionary<string, QuestionCountModel> QuestionCount { get; set; }
     }
 }

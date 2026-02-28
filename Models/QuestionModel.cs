@@ -10,22 +10,22 @@ namespace TriviaNight.Models
         public int Id { get; set; }
 
         [JsonPropertyName("type")]
-        public string? Type { get; set; }
+        public required string Type { get; set; }
 
         [JsonPropertyName("difficulty")]
-        public string? Difficulty { get; set; }
+        public required string Difficulty { get; set; }
 
         [JsonPropertyName("category")]
-        public string? Category { get; set; }
+        public required string Category { get; set; }
 
         [JsonPropertyName("question")]
-        public string? Question { get; set; }
+        public required string Question { get; set; }
 
         [JsonPropertyName("correct_answer")]
-        public string? CorrectAnswer { get; set; }
+        public required string CorrectAnswer { get; set; }
 
         [JsonPropertyName("incorrect_answers")]
-        public List<String>? IncorrectAnswers { get; set; }
+        public required List<String> IncorrectAnswers { get; set; }
 
         public bool Answered { get; set; }
     }
@@ -33,6 +33,6 @@ namespace TriviaNight.Models
     public class QuestionsList
     {
         [JsonPropertyName("results")]
-        public List<QuestionModel>? Questions { get; set; }
+        public required List<QuestionModel> Questions { get; set; }
     }
 }
