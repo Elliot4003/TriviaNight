@@ -1,61 +1,67 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using TriviaNight.Extensions;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
 
-namespace TriviaNight.Controllers
+namespace TriviaNight.Controllers;
+
+public class CategoriesController : Controller
 {
-    public class CategoriesController : Controller
+    private readonly ILogger<CategoriesController> _logger;
+    private readonly IApiService _apiService;
+
+    public CategoriesController(
+        ILogger<CategoriesController> logger, 
+        IApiService apiService
+        )
     {
-        private readonly ILogger<CategoriesController> _logger;
-        private readonly IApiService _apiService;
-        private readonly IQuestionsService _questionsService;
-        private readonly ICategoriesService _categoriesService;
-        private readonly IScoreService _scoreService;
+        _logger = logger;
+        _apiService = apiService;
+    }
 
-        public CategoriesController(
-            ILogger<CategoriesController> logger, 
-            IApiService apiService, 
-            IQuestionsService questionsService, 
-            ICategoriesService categoriesService, 
-            IScoreService scoreService)
+    [HttpGet]
+    public async Task<IActionResult> Categories()
+    {
+        CleanSession();
+
+        // Initilisation
+        if (!HttpContext.Session.Keys.Contains("Categories"))
         {
-            _logger = logger;
-            _apiService = apiService;
-            _questionsService = questionsService;
-            _categoriesService = categoriesService;
-            _scoreService = scoreService;
+            var categoryRequestResult = await _apiService.CategoryRequestAsync();
+            HttpContext.Session.Set("Categories", categoryRequestResult);
         }
 
-        [HttpGet]
-        public IActionResult Categories()
-        {
-            _questionsService.DeleteQuestions(); // Suppression des potentielles questions
-            _scoreService.DeleteScore(); // Suppression du potentiel score
+        var categories = GetSessionCategories();
 
-            var categories = new CategoriesList();
-            if (_categoriesService.GetCategoryCount() == 0) 
-            {
-                categories = _apiService.CategoryRequest(); // Première récupération des catégories
-                _categoriesService.SaveCategories(categories);
-            } 
-            else
-            {
-                categories = _categoriesService.GetCategories(); // Récupération en mémoire
-            }
+        return View(categories);
+    }
 
-            return View(categories);
-        }
+    private void CleanSession()
+    {
+        // Nettoyage de la session
+        HttpContext.Session.Remove("Questions");
+        HttpContext.Session.Remove("Score");
+    }
 
-        public IActionResult Contribute()
-        {
-            return View();
-        }
+    private CategoriesList GetSessionCategories()
+    {
+        var categories = HttpContext.Session.Get<CategoriesList>("Categories");
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        if (categories is null || categories.Categories is null || categories.Categories.Count == 0)
+            throw new Exception("Aucune catégorie trouvée pour cette session.");
+
+        return categories;
+    }
+
+    public IActionResult Contribute()
+    {
+        return View();
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

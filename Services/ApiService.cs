@@ -3,115 +3,111 @@ using TriviaNight.Interfaces;
 using TriviaNight.Models;
 using System.Text.Json;
 
-namespace TriviaNight.Services
+namespace TriviaNight.Services;
+
+public class ApiService : IApiService
 {
-    public class ApiService : IApiService
+    public Uri BaseAddress { get; } = new Uri("https://opentdb.com/");
+    public HttpClient Client { get; }
+    
+    public ApiService()
     {
-        public Uri BaseAddress { get; } = new Uri("https://opentdb.com/");
-        public HttpClient Client { get; }
+        Client = new HttpClient { BaseAddress = BaseAddress };
+    }
+
+    /// <summary>
+    /// Récupère les questions via l'API OTDB en fonction de la requête émise par l'utilisateur
+    /// </summary>
+    /// <param name="questionRequest">Contient la catégorie, le nombre de questions et la difficulté</param>
+    /// <returns>Les questions</returns>
+    [HttpPost]
+    public async Task<QuestionsList> QuestionRequestAsync(QuestionRequestModel questionRequest)
+    {
+        string request = "api.php?category=" + questionRequest.Category.ToString() + "&amount=" + questionRequest.Amount.ToString() + "&difficulty=" + questionRequest.Difficulty.ToLower();
+        HttpResponseMessage response = await Client.GetAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException(response.ReasonPhrase);
+
+        var data = response.Content.ReadAsStream();
+        var questions = await JsonSerializer.DeserializeAsync<QuestionsList>(data);
+
+        if (questions is null)
+            throw new Exception("L'API n'a retourné aucun résultat");
+
+        return questions;
+    }
+
+    /// <summary>
+    /// Récupère toutes les catégories via l'API OTDB
+    /// </summary>
+    /// <returns>Les catégories</returns>
+    [HttpGet]
+    public async Task<CategoriesList> CategoryRequestAsync()
+    {
+        HttpResponseMessage response = await Client.GetAsync("api_category.php");
+
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException(response.ReasonPhrase);
+
+        var data = response.Content.ReadAsStream();
+        var categories = await JsonSerializer.DeserializeAsync<CategoriesList>(data);
+
+        if (categories is null)
+            throw new Exception("L'API n'a retourné aucun résultat");
+
+        foreach (var category in categories.Categories)
+        {
+            var categoryQuestionCount = await CategoryQuestionCountRequestAsync(category.Id);
+                
+            category.EasyQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalEasyQuestionCount;
+            category.MediumQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalMediumQuestionCount;
+            category.HardQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalHardQuestionCount;
+        }
         
-        public ApiService()
-        {
-            Client = new HttpClient { BaseAddress = BaseAddress };
-        }
+        return categories;
+    }
 
-        /// <summary>
-        /// Récupère les questions via l'API OTDB en fonction de la requête émise par l'utilisateur
-        /// </summary>
-        /// <param name="questionRequest">Contient la catégorie, le nombre de questions et la difficulté</param>
-        /// <returns>Les questions</returns>
-        [HttpPost]
-        public QuestionsList QuestionRequest(QuestionRequestModel questionRequest)
-        {
-            var questions = new QuestionsList();
-            string request = "api.php?category=" + questionRequest.Category.ToString() + "&amount=" + questionRequest.Amount.ToString() + "&difficulty=" + questionRequest.Difficulty.ToLower();
-            HttpResponseMessage response = Client.GetAsync(request).Result;
+    /// <summary>
+    /// Récupère le nombre total de questions disponibles sur OTDB
+    /// </summary>
+    /// <returns>Le nombre de questions</returns>
+    [HttpGet]
+    private async Task<QuestionCountResponse> QuestionCountRequestAsync()
+    {
+        HttpResponseMessage response = await Client.GetAsync("api_count_global.php");
 
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                var result = JsonSerializer.Deserialize<QuestionsList>(data);
-                questions = result ?? new QuestionsList();
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException(response.ReasonPhrase);
 
-                return questions;
-            }
-            return questions;
-        }
+        var data = response.Content.ReadAsStream();
+        var questionCount = await JsonSerializer.DeserializeAsync<QuestionCountResponse>(data);
+        
+        if (questionCount is null)
+            throw new Exception("L'API n'a retourné aucun résultat");
 
-        /// <summary>
-        /// Récupère toutes les catégories via l'API OTDB
-        /// </summary>
-        /// <returns>Les catégories</returns>
-        [HttpGet]
-        public CategoriesList CategoryRequest()
-        {
-            var categories = new CategoriesList();
-            HttpResponseMessage response = Client.GetAsync("api_category.php").Result;
-            var categoryQuestionCount = new CategoryQuestionCountResponse();
+        return questionCount;
+    }
 
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                var result = JsonSerializer.Deserialize<CategoriesList>(data);
-                categories = result ?? new CategoriesList();
+    /// <summary>
+    /// Récupère le nombre de questions d'une catégorie via l'API OTDB
+    /// </summary>
+    /// <param name="id">Id de la catégorie</param>
+    /// <returns>Le nombre de questions d'une catégorie</returns>
+    [HttpPost]
+    private async Task<CategoryQuestionCountResponse> CategoryQuestionCountRequestAsync(int id)
+    {
+        HttpResponseMessage response = await Client.GetAsync("api_count.php?category=" + id);
 
-                if (categories.Categories != null) 
-                {
-                    foreach (var category in categories.Categories)
-                    {
-                        categoryQuestionCount = CategoryQuestionCount(category.Id);
-                        if (categoryQuestionCount.CategoryQuestionCount != null) 
-                        {
-                            category.EasyQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalEasyQuestionCount;
-                            category.MediumQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalMediumQuestionCount;
-                            category.HardQuestionCount = categoryQuestionCount.CategoryQuestionCount.TotalHardQuestionCount;
-                        }
-                    }
-                }
-            }
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException(response.ReasonPhrase);
 
-            return(categories);
-        }
+        var data = response.Content.ReadAsStream();
+        var categoryQuestionCount = await JsonSerializer.DeserializeAsync<CategoryQuestionCountResponse>(data);
+        
+        if (categoryQuestionCount is null)
+            throw new Exception("L'API n'a retourné aucun résultat");
 
-        /// <summary>
-        /// Récupère le nombre total de questions disponibles sur OTDB
-        /// </summary>
-        /// <returns>Le nombre de questions</returns>
-        [HttpGet]
-        private QuestionCountResponse QuestionCount()
-        {
-            var questionCount = new QuestionCountResponse();
-            HttpResponseMessage response = this.Client.GetAsync("api_count_global.php").Result;
-
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                var result = JsonSerializer.Deserialize<QuestionCountResponse>(data);
-                questionCount = result ?? new QuestionCountResponse();
-            }
-
-            return questionCount;
-        }
-
-        /// <summary>
-        /// Récupère le nombre de questions d'une catégorie via l'API OTDB
-        /// </summary>
-        /// <param name="id">Id de la catégorie</param>
-        /// <returns>Le nombre de questions d'une catégorie</returns>
-        [HttpPost]
-        private CategoryQuestionCountResponse CategoryQuestionCount(int id)
-        {
-            var categoryQuestionCount = new CategoryQuestionCountResponse();
-            HttpResponseMessage response = this.Client.GetAsync("api_count.php?category=" + id).Result;
-
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                var result = JsonSerializer.Deserialize<CategoryQuestionCountResponse>(data);
-                categoryQuestionCount = result ?? new CategoryQuestionCountResponse();
-            }
-
-            return categoryQuestionCount;
-        }
+        return categoryQuestionCount;
     }
 }

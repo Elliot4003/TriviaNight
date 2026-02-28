@@ -1,10 +1,9 @@
-﻿namespace TriviaNight.Enum
+﻿namespace TriviaNight.Enum;
+
+public enum ScoreResultEnum
 {
-    public enum ScoreResultEnum
-    {
-        Bad,
-        Medium,
-        Good,
-        Perfect
-    }
+    Bad,
+    Medium,
+    Good,
+    Perfect
 }
