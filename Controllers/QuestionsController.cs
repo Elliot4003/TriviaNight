@@ -32,7 +32,7 @@ namespace TriviaNight.Controllers
 
             var questions = await _apiService.QuestionRequestAsync(questionRequest); // Récupération via l'API
 
-            var score = InitializeScore();
+            var score = InitializeScore(questions.Questions.Count);
 
             // Enregistrement en session du score
             HttpContext.Session.Set("Score", score);
@@ -55,14 +55,14 @@ namespace TriviaNight.Controllers
             var questions = GetSessionQuestions();
             var score = GetSessionScore();
 
-            ViewBag.Score = score.Score;
-            ViewBag.QuestionCount = questions.Questions.Count;
-
             // Récupération de la première question sans réponse afin de faciliter la navigation
-            var question = questions.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).First();
-            ViewBag.Id = question.Id;
+            var question = questions.Questions.Where(x => !x.Answered).OrderBy(x => x.Id).FirstOrDefault();
 
-            if (question.Id == 0) return RedirectToAction("Score"); // Dernière question
+            // Dernière question
+            if (question is null)
+                return RedirectToAction("Score");
+
+            ViewBag.Id = question.Id;
 
             return View(question);
         }
@@ -75,7 +75,10 @@ namespace TriviaNight.Controllers
 
             // On reçoit la donnée sous la forme <id>_correct ou <id>_incorrect pour récupérer l'id et connaitre le résultat
             if (data.Contains("_correct"))
+            {
                 score.Score++;
+                HttpContext.Session.Set("Score", score);
+            }
 
             int id = Int32.Parse(data.Split("_")[0]);
             var question = questions.Questions.Find(x => x.Id == id);
@@ -83,6 +86,10 @@ namespace TriviaNight.Controllers
                 throw new Exception("Aucune question trouvée pour cet ID.");
 
             question.Answered = true;
+
+            // Màj session
+            HttpContext.Session.Set("Questions", questions);
+
             return Ok();
             
         }
@@ -93,11 +100,9 @@ namespace TriviaNight.Controllers
             var score = GetSessionScore();
             var questionCount = questions.Questions.Count;
 
-            score.QuestionCount = questionCount;
-
             // Vérifier qu'une réponse a été apportée à chaque question, sinon on redirige vers la première question sans réponse
             var questionsLeft = questions.Questions.Count(x => !x.Answered);
-            if (questionsLeft != 0 || score.QuestionCount == 0) 
+            if (questionsLeft != 0) 
                 return RedirectToAction("Question");
 
             var perf = score.Score > 0 ? score.Score / questionCount * 10 : 0; // Calcul de la performance
@@ -144,12 +149,13 @@ namespace TriviaNight.Controllers
             return score;
         }
 
-        private static ScoreModel InitializeScore()
+        private static ScoreModel InitializeScore(int questionCount)
         {
             return new ScoreModel()
             {
                 Id = 1,
-                Score = 0
+                Score = 0,
+                QuestionCount = questionCount
             };
         }
 

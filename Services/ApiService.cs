@@ -27,7 +27,7 @@ namespace TriviaNight.Services
             HttpResponseMessage response = await Client.GetAsync(request);
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+                throw new HttpRequestException(response.ReasonPhrase);
 
             var data = response.Content.ReadAsStream();
             var questions = await JsonSerializer.DeserializeAsync<QuestionsList>(data);
@@ -48,7 +48,7 @@ namespace TriviaNight.Services
             HttpResponseMessage response = await Client.GetAsync("api_category.php");
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+                throw new HttpRequestException(response.ReasonPhrase);
 
             var data = response.Content.ReadAsStream();
             var categories = await JsonSerializer.DeserializeAsync<CategoriesList>(data);
@@ -78,7 +78,7 @@ namespace TriviaNight.Services
             HttpResponseMessage response = await Client.GetAsync("api_count_global.php");
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+                throw new HttpRequestException(response.ReasonPhrase);
 
             var data = response.Content.ReadAsStream();
             var questionCount = await JsonSerializer.DeserializeAsync<QuestionCountResponse>(data);
@@ -100,7 +100,7 @@ namespace TriviaNight.Services
             HttpResponseMessage response = await Client.GetAsync("api_count.php?category=" + id);
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+                throw new HttpRequestException(response.ReasonPhrase);
 
             var data = response.Content.ReadAsStream();
             var categoryQuestionCount = await JsonSerializer.DeserializeAsync<CategoryQuestionCountResponse>(data);
