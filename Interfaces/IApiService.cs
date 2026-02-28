@@ -1,16 +1,14 @@
-﻿
-using TriviaNight.Models;
+﻿using TriviaNight.Models;
 
-namespace TriviaNight.Interfaces
+namespace TriviaNight.Interfaces;
+
+public interface IApiService
 {
-    public interface IApiService
-    {
-        Uri BaseAddress { get; }
+    Uri BaseAddress { get; }
 
-        HttpClient Client { get; }
+    HttpClient Client { get; }
 
-        public Task<QuestionsList> QuestionRequestAsync(QuestionRequestModel questionRequest);
+    public Task<QuestionsList> QuestionRequestAsync(QuestionRequestModel questionRequest);
 
-        public Task<CategoriesList> CategoryRequestAsync();
-    }
+    public Task<CategoriesList> CategoryRequestAsync();
 }

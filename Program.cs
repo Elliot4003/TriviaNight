@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
 using TriviaNight.Services;

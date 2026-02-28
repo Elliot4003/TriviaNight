@@ -1,71 +1,67 @@
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Versioning;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using TriviaNight.Extensions;
 using TriviaNight.Interfaces;
 using TriviaNight.Models;
-using TriviaNight.Services;
 
-namespace TriviaNight.Controllers
+namespace TriviaNight.Controllers;
+
+public class CategoriesController : Controller
 {
-    public class CategoriesController : Controller
+    private readonly ILogger<CategoriesController> _logger;
+    private readonly IApiService _apiService;
+
+    public CategoriesController(
+        ILogger<CategoriesController> logger, 
+        IApiService apiService
+        )
     {
-        private readonly ILogger<CategoriesController> _logger;
-        private readonly IApiService _apiService;
+        _logger = logger;
+        _apiService = apiService;
+    }
 
-        public CategoriesController(
-            ILogger<CategoriesController> logger, 
-            IApiService apiService
-            )
+    [HttpGet]
+    public async Task<IActionResult> Categories()
+    {
+        CleanSession();
+
+        // Initilisation
+        if (!HttpContext.Session.Keys.Contains("Categories"))
         {
-            _logger = logger;
-            _apiService = apiService;
+            var categoryRequestResult = await _apiService.CategoryRequestAsync();
+            HttpContext.Session.Set("Categories", categoryRequestResult);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Categories()
-        {
-            CleanSession();
+        var categories = GetSessionCategories();
 
-            // Initilisation
-            if (!HttpContext.Session.Keys.Contains("Categories"))
-            {
-                var categoryRequestResult = await _apiService.CategoryRequestAsync();
-                HttpContext.Session.Set("Categories", categoryRequestResult);
-            }
+        return View(categories);
+    }
 
-            var categories = GetSessionCategories();
+    private void CleanSession()
+    {
+        // Nettoyage de la session
+        HttpContext.Session.Remove("Questions");
+        HttpContext.Session.Remove("Score");
+    }
 
-            return View(categories);
-        }
+    private CategoriesList GetSessionCategories()
+    {
+        var categories = HttpContext.Session.Get<CategoriesList>("Categories");
 
-        private void CleanSession()
-        {
-            // Nettoyage de la session
-            HttpContext.Session.Remove("Questions");
-            HttpContext.Session.Remove("Score");
-        }
+        if (categories is null || categories.Categories is null || categories.Categories.Count == 0)
+            throw new Exception("Aucune catégorie trouvée pour cette session.");
 
-        private CategoriesList GetSessionCategories()
-        {
-            var categories = HttpContext.Session.Get<CategoriesList>("Categories");
+        return categories;
+    }
 
-            if (categories is null || categories.Categories is null || categories.Categories.Count == 0)
-                throw new Exception("Aucune catégorie trouvée pour cette session.");
+    public IActionResult Contribute()
+    {
+        return View();
+    }
 
-            return categories;
-        }
-
-        public IActionResult Contribute()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
